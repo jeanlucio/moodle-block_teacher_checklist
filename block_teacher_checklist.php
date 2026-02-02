@@ -38,7 +38,7 @@ class block_teacher_checklist extends block_base {
      * @return stdClass
      */
     public function get_content() {
-        global $COURSE;
+        global $COURSE, $DB, $OUTPUT; // Adicionado $DB e $OUTPUT
 
         if ($this->content !== null) {
             return $this->content;
@@ -49,23 +49,51 @@ class block_teacher_checklist extends block_base {
         // 1. Permission Check.
         $context = context_course::instance($COURSE->id);
         if (!has_capability('moodle/course:update', $context)) {
-            // If user cannot edit course, show nothing.
             return $this->content;
         }
 
-        // 2. Fetch Issues via Scanner.
+        // 2. Fetch Auto Issues via Scanner.
         $scanner = new \block_teacher_checklist\scanner($COURSE);
-        $allissues = $scanner->get_all_issues();
+        $autoissues = $scanner->get_all_issues();
 
-        // Filter only pending issues for the block view (status = 0).
-        $pendingissues = array_filter($allissues, function($issue) {
-            return (int)$issue['status'] === 0;
+        // 3. Fetch Manual Pending Issues (Fix: Adicionando itens manuais ao bloco).
+        $manualrecords = $DB->get_records('block_teacher_checklist', [
+            'courseid' => $COURSE->id, 
+            'type' => 'manual', 
+            'status' => 0 // Apenas pendentes
+        ]);
+
+        $manualissues = [];
+        foreach ($manualrecords as $rec) {
+            $manualissues[] = [
+                'id' => $rec->id,
+                'type' => 'manual',
+                'subtype' => '',
+                'docid' => 0,
+                'title' => $rec->title,
+                'url' => '#',
+                'icon' => $OUTPUT->image_url('t/edit'), // Ícone padrão de edição
+                'status' => (int)$rec->status,
+            ];
+        }
+
+        // 4. Merge and Filter.
+        // Funde os dois arrays
+        $allitems = array_merge($autoissues, $manualissues);
+
+        // Garante que só temos pendentes (o scanner pode retornar outros status se não filtrado lá)
+        $pendingissues = array_filter($allitems, function($item) {
+            return (int)$item['status'] === 0;
         });
 
-        // 3. Render Content.
+        // Opcional: Ordenar para manuais aparecerem primeiro ou misturados? 
+        // Por padrão o array_merge coloca manuais no fim. Se quiser misturar, usaria usort aqui.
+
+        // 5. Render Content.
         /** @var \block_teacher_checklist\output\renderer $renderer */
         $renderer = $this->page->get_renderer('block_teacher_checklist');
         
+        // Renderiza (agora o renderer vai ocultar os checkboxes)
         $this->content->text = $renderer->render_block_summary($pendingissues, $COURSE->id);
 
         // Inject JavaScript.

@@ -43,7 +43,8 @@ class renderer extends plugin_renderer_base {
         $formattedissues = [];
 
         foreach ($displayissues as $issue) {
-            $formattedissues[] = $this->prepare_issue_for_template($issue, $courseid, 'pending');
+            // NOVIDADE: Passamos 'false' no 4º argumento para esconder o checkbox no bloco
+            $formattedissues[] = $this->prepare_issue_for_template($issue, $courseid, 'pending', false);
         }
 
         $data = [
@@ -62,9 +63,10 @@ class renderer extends plugin_renderer_base {
      * @param array $issue Raw issue data from scanner/DB.
      * @param int $courseid Course ID.
      * @param string $mode 'pending', 'ignored', or 'done'.
+     * @param bool $bulkable Whether to show the selection checkbox (default: true).
      * @return array Context for checklist_item template.
      */
-    public function prepare_issue_for_template(array $issue, int $courseid, string $mode): array {
+    public function prepare_issue_for_template(array $issue, int $courseid, string $mode, bool $bulkable = true): array {
         // Determine ID to use (DB id for manual, docid for auto).
         $docid = ($issue['type'] === 'manual') ? (int) $issue['id'] : (int) ($issue['docid'] ?? 0);
 
@@ -78,7 +80,7 @@ class renderer extends plugin_renderer_base {
         $context = [
             'id' => $issue['id'] ?? uniqid(),
             'isdone' => ($mode === 'done'),
-            'bulkable' => true,
+            'bulkable' => $bulkable, // <--- AGORA USA O PARÂMETRO
             'type' => $issue['type'],
             'subtype' => $issue['subtype'],
             'docid' => $docid,
