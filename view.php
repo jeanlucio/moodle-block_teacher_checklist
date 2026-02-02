@@ -104,7 +104,6 @@ foreach ($allitems as $item) {
 
 // --- 3. Prepare Template Data ---
 $data = [
-    'checklist_title' => get_string('checklist_title', 'block_teacher_checklist'),
     'courseid' => $courseid,
     'is_scan_active' => $isscanactive,
     'add_item_form' => $mform->render(),
