@@ -1,12 +1,27 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 defined('MOODLE_INTERNAL') || die();
 
-$functions = array(
-    'block_teacher_checklist_toggle_item_status' => array(
+$functions = [
+    'block_teacher_checklist_toggle_item_status' => [
         'classname'   => 'block_teacher_checklist\external',
         'methodname'  => 'toggle_item_status',
-        'description' => 'Muda o status de um item do checklist',
+        'description' => 'Toggles the status of a checklist item.',
         'type'        => 'write',
-        'ajax'        => true, // Importante: permite chamada via Javascript
-    ),
-);
+        'ajax'        => true,
+    ],
+];

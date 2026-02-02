@@ -16,8 +16,26 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'block_teacher_checklist'; // Nome técnico exato da pasta.
-$plugin->version   = 2026013101;                // Data de hoje (YYYYMMDD00).
-$plugin->requires  = 2022041900;                // Requer Moodle 4.0 ou superior.
-$plugin->maturity  = MATURITY_STABLE;           // Pronto para produção.
-$plugin->release   = '1.0.0';                   // Versão humana.
+require_once($CFG->dirroot . '/blocks/teacher_checklist/backup/moodle2/backup_teacher_checklist_stepslib.php');
+
+class backup_teacher_checklist_block_task extends backup_block_task {
+
+    protected function define_my_steps() {
+        $this->add_step(new backup_teacher_checklist_structure_step('teacher_checklist_structure', 'block_teacher_checklist.xml'));
+    }
+
+    protected function define_my_settings() {
+    }
+
+    public static function encode_content_links($content) {
+        return $content;
+    }
+
+    public function get_fileareas() {
+        return [];
+    }
+
+    public function get_configdata_encoded_attributes() {
+        return [];
+    }
+}

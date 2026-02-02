@@ -1,0 +1,59 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_teacher_checklist/block_summary
+
+    Displays the summary content inside the course block.
+
+    Context variables required for this template:
+    * hasissues
+    * issues (array of checklist_item contexts)
+    * moreissues (boolean/object with count)
+    * fullreporturl
+
+    @package    block_teacher_checklist
+    @copyright  2026 Jean Lúcio <jeanlucio@gmail.com>
+    @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+}}
+<div class="block-teacher-checklist-summary">
+    {{#hasissues}}
+        <ul class="list-group list-group-flush mb-3">
+            {{#issues}}
+                {{> block_teacher_checklist/checklist_item }}
+            {{/issues}}
+        </ul>
+        
+        {{#moreissues}}
+        <div class="text-center small text-muted fst-italic mb-2">
+            {{#str}} andmore, block_teacher_checklist, {{count}} {{/str}}
+        </div>
+        {{/moreissues}}
+    {{/hasissues}}
+
+    {{^hasissues}}
+        <div class="alert alert-success d-flex align-items-center" role="alert">
+            <i class="fa fa-check-circle fa-lg me-2"></i>
+            <div>{{#str}} no_issues_found, block_teacher_checklist {{/str}}</div>
+        </div>
+    {{/hasissues}}
+
+    <div class="text-center">
+        <a href="{{fullreporturl}}" class="btn btn-primary btn-sm w-100">
+            {{#str}} view_full_report, block_teacher_checklist {{/str}}
+        </a>
+    </div>
+</div>

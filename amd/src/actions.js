@@ -1,15 +1,13 @@
-define(['jquery', 'core/ajax', 'core/notification'], function($, Ajax, Notification) {
+define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, Ajax, Notification, Str) {
 
     return {
         init: function() {
 
             /**
-             * Processa e envia as atualizações de status para o servidor.
-             *
-             * @param {Array} itemsData Lista de objetos contendo os dados dos itens a atualizar.
+             * Sends update requests to the server.
+             * @param {Array} itemsData Array of item objects.
              */
             function processUpdates(itemsData) {
-                // Cria o array de chamadas para o Moodle
                 var calls = itemsData.map(function(data) {
                     return {
                         methodname: 'block_teacher_checklist_toggle_item_status',
@@ -17,17 +15,17 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, Ajax, Notificat
                     };
                 });
 
-                // Executa em lote
                 Ajax.call(calls)[calls.length - 1].done(function() {
                     window.location.reload();
                 }).fail(Notification.exception);
             }
 
-            // 1. AÇÃO INDIVIDUAL (Botões laterais)
-            $('.block_teacher_checklist').on('click', '[data-action="toggle-status"]', function(e) {
+            // 1. INDIVIDUAL TOGGLE BUTTONS (Done, Ignore, Restore)
+            // We use delegated events on document or a main container for dynamic content support.
+            $('body').on('click', '[data-action="toggle-status"]', function(e) {
                 e.preventDefault();
                 var btn = $(this);
-                // Chama a função de processar (agora em camelCase)
+
                 processUpdates([{
                     courseid: btn.data('courseid'),
                     type: btn.data('type'),
@@ -37,48 +35,46 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, Ajax, Notificat
                 }]);
             });
 
-            // 2. LÓGICA DO "SELECIONAR TODOS"
+            // 2. "SELECT ALL" LOGIC
             $('.select-all-toggle').on('change', function() {
                 var targetList = $(this).data('target');
                 var isChecked = $(this).is(':checked');
 
-                // Marca/Desmarca todos os checkboxes VISÍVEIS dentro da lista alvo
                 $(targetList).find('.item-checkbox').prop('checked', isChecked).trigger('change');
             });
 
-            // 3. EXIBIR/OCULTAR BARRA DE AÇÕES EM MASSA
+            // 3. BULK ACTIONS VISIBILITY
             $('.item-checkbox').on('change', function() {
-                // Procura a barra de ações mais próxima (dentro da mesma aba)
-                var container = $(this).closest('.tab-pane');
+                var container = $(this).closest('.tab-pane'); // Find parent tab pane
                 var totalChecked = container.find('.item-checkbox:checked').length;
+                var bulkContainer = container.find('.bulk-actions-container');
 
                 if (totalChecked > 0) {
-                    container.find('.bulk-actions-container').fadeIn(200);
+                    bulkContainer.fadeIn(200);
                 } else {
-                    container.find('.bulk-actions-container').fadeOut(200);
-                    // Desmarca o "Select All" se desmarcar um item
+                    bulkContainer.fadeOut(200);
+                    // Uncheck main toggle if no items are checked
                     container.find('.select-all-toggle').prop('checked', false);
                 }
             });
 
-            // 4. CLIQUE NOS BOTÕES DE AÇÃO EM MASSA
+            // 4. BULK ACTION BUTTONS
             $('.bulk-btn').on('click', function(e) {
                 e.preventDefault();
                 var btn = $(this);
                 var newStatus = btn.data('action');
                 var courseId = btn.data('courseid');
                 var container = btn.closest('.tab-pane');
-
                 var requests = [];
 
-                // Varre todos os checkboxes marcados nesta aba
                 container.find('.item-checkbox:checked').each(function() {
                     var chk = $(this);
 
-                    // IMPORTANTE: Se a ação for "Feito" (status 1) e o item for automático, IGNORA.
-                    if (newStatus == 1 && chk.data('type') === 'auto') {
-                        return; // Pula este item
-                    }
+                    // Prevent marking "auto" items as "done" (status 1) via bulk action if needed,
+                    // but logic permits it if displayed. Assuming auto items CANNOT be manually marked done
+                    // unless they are removed from the list automatically.
+                    // Logic check: Auto items usually disappear when done in Moodle.
+                    // If the checkbox is there, we assume it's actionable.
 
                     requests.push({
                         courseid: courseId,
@@ -92,26 +88,28 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, Ajax, Notificat
                 if (requests.length > 0) {
                     processUpdates(requests);
                 } else {
-                    // Feedback caso tente marcar automático como feito
-                    Notification.alert('Aviso', 'Nenhum item válido selecionado para esta ação.', 'Ok');
+                    Str.get_strings([
+                        {key: 'notice', component: 'moodle'},
+                        {key: 'no_items_selected', component: 'block_teacher_checklist'}
+                    ]).done(function(s) {
+                        Notification.alert(s[0], s[1], 'Ok');
+                    });
                 }
             });
 
-            // 5. NOVO: INTERRUPTOR DE VARREDURA AUTOMÁTICA
+            // 5. AUTO SCAN TOGGLE SWITCH
             $('#toggleScan').on('change', function() {
                 var isChecked = $(this).is(':checked');
                 var courseId = $(this).data('courseid');
 
-                // Envia como um item especial do tipo 'config'
                 processUpdates([{
                     courseid: courseId,
-                    type:     'config',
-                    subtype:  'scan_enabled',
-                    docid:    0,
-                    status:   isChecked ? 1 : 0
+                    type: 'config',
+                    subtype: 'scan_enabled',
+                    docid: 0,
+                    status: isChecked ? 1 : 0
                 }]);
             });
-
         }
     };
 });

@@ -1,0 +1,132 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_teacher_checklist/checklist_item
+
+    Displays a single checklist item row.
+
+    Classes required for JS:
+    * item-checkbox
+    * actions
+
+    Data attributes required for JS:
+    * data-region
+    * data-id
+    * data-type
+    * data-subtype
+    * data-docid
+    * data-action
+
+    Context variables required for this template:
+    * id
+    * isdone
+    * bulkable
+    * type
+    * subtype
+    * docid
+    * icon
+    * url
+    * title
+    * severity_high
+    * courseid
+    * can_mark_done
+    * can_restore
+    * can_ignore
+
+    @package    block_teacher_checklist
+    @copyright  2026 Jean Lúcio <jeanlucio@gmail.com>
+    @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+}}
+<li class="list-group-item d-flex justify-content-between align-items-center {{#isdone}}bg-light{{/isdone}}" 
+    data-region="checklist-item" 
+    data-id="{{id}}">
+    
+    <div class="d-flex align-items-center">
+        {{#bulkable}}
+        <div class="form-check me-3">
+            <input class="form-check-input item-checkbox" type="checkbox" 
+                   data-type="{{type}}" 
+                   data-subtype="{{subtype}}" 
+                   data-docid="{{docid}}" 
+                   aria-label="{{#str}} selectitem, core {{/str}}">
+        </div>
+        {{/bulkable}}
+
+        <div class="d-flex align-items-center">
+            <img src="{{{icon}}}" class="icon me-2" alt="" role="presentation" />
+            
+            <div class="item-details">
+                {{#url}}
+                    <a href="{{{url}}}" target="_blank" class="text-break fw-bold text-decoration-none">
+                        {{{title}}}
+                    </a>
+                {{/url}}
+                {{^url}}
+                    <span class="text-break fw-bold">{{{title}}}</span>
+                {{/url}}
+                
+                {{#severity_high}}
+                    <span class="badge bg-danger ms-1">{{#str}} high, block_teacher_checklist {{/str}}</span>
+                {{/severity_high}}
+            </div>
+        </div>
+    </div>
+
+    <div class="actions text-end text-nowrap ms-2">
+        {{! Done Button - Only for pending manual items }}
+        {{#can_mark_done}}
+        <button class="btn btn-sm btn-outline-success me-1" 
+                data-action="toggle-status" 
+                data-courseid="{{courseid}}" 
+                data-type="{{type}}" 
+                data-subtype="{{subtype}}" 
+                data-docid="{{docid}}" 
+                data-status="1" 
+                title="{{#str}} mark_done, block_teacher_checklist {{/str}}">
+            <i class="fa fa-check" aria-hidden="true"></i>
+        </button>
+        {{/can_mark_done}}
+
+        {{! Restore Button - For done or ignored items }}
+        {{#can_restore}}
+        <button class="btn btn-sm btn-outline-secondary me-1" 
+                data-action="toggle-status" 
+                data-courseid="{{courseid}}" 
+                data-type="{{type}}" 
+                data-subtype="{{subtype}}" 
+                data-docid="{{docid}}" 
+                data-status="0" 
+                title="{{#str}} restore, block_teacher_checklist {{/str}}">
+            <i class="fa fa-undo" aria-hidden="true"></i>
+        </button>
+        {{/can_restore}}
+
+        {{! Ignore Button - For pending items }}
+        {{#can_ignore}}
+        <button class="btn btn-sm btn-outline-danger" 
+                data-action="toggle-status" 
+                data-courseid="{{courseid}}" 
+                data-type="{{type}}" 
+                data-subtype="{{subtype}}" 
+                data-docid="{{docid}}" 
+                data-status="2" 
+                title="{{#str}} ignore, block_teacher_checklist {{/str}}">
+            <i class="fa fa-times" aria-hidden="true"></i>
+        </button>
+        {{/can_ignore}}
+    </div>
+</li>

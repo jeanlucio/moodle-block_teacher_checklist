@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="blocks/teacher_checklist/db" VERSION="20240130" COMMENT="Tabela para checklist docente"
+<XMLDB PATH="blocks/teacher_checklist/db" VERSION="20260131" COMMENT="Table for teacher checklist items"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="block_teacher_checklist" COMMENT="Itens do checklist">
+    <TABLE NAME="block_teacher_checklist" COMMENT="Checklist items store">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="ID do curso"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Criador ou modificador"/>
-        <FIELD NAME="type" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="manual" SEQUENCE="false" COMMENT="auto ou manual"/>
-        <FIELD NAME="subtype" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" COMMENT="ex: mod_assign"/>
-        <FIELD NAME="docid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="ID da instancia"/>
-        <FIELD NAME="title" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Texto da tarefa manual"/>
-        <FIELD NAME="status" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="0=Pendente, 1=Feito, 2=Ignorado"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Course ID"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Creator or modifier ID"/>
+        <FIELD NAME="type" TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="manual" SEQUENCE="false" COMMENT="auto or manual"/>
+        <FIELD NAME="subtype" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false" COMMENT="e.g. mod_assign"/>
+        <FIELD NAME="docid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Instance ID"/>
+        <FIELD NAME="title" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Manual task text title"/>
+        <FIELD NAME="status" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="0=Pending, 1=Done, 2=Ignored"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>

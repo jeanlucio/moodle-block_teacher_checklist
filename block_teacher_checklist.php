@@ -1,120 +1,85 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+defined('MOODLE_INTERNAL') || die();
+
+/**
+ * Teacher Checklist Block.
+ *
+ * @package    block_teacher_checklist
+ * @copyright  2026 Jean Lúcio <jeanlucio@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class block_teacher_checklist extends block_base {
-    
+
+    /**
+     * Initialize the block.
+     */
     public function init() {
         $this->title = get_string('pluginname', 'block_teacher_checklist');
     }
 
+    /**
+     * Generate the block content.
+     *
+     * @return stdClass
+     */
     public function get_content() {
-        global $COURSE, $OUTPUT;
+        global $COURSE;
 
         if ($this->content !== null) {
             return $this->content;
         }
 
         $this->content = new stdClass();
-        
-        // 1. Verifica permissão (Só professor vê)
+
+        // 1. Permission Check.
         $context = context_course::instance($COURSE->id);
         if (!has_capability('moodle/course:update', $context)) {
-            $this->content->text = '';
+            // If user cannot edit course, show nothing.
             return $this->content;
         }
 
-        // 2. Instancia o Scanner
-        // CORREÇÃO AQUI: Chamamos o metodo novo get_all_issues()
+        // 2. Fetch Issues via Scanner.
         $scanner = new \block_teacher_checklist\scanner($COURSE);
-        $all_issues = $scanner->get_all_issues();
+        $allissues = $scanner->get_all_issues();
 
-        // Vamos filtrar apenas os pendentes para exibir no bloco
-        $pending_issues = [];
-        foreach ($all_issues as $issue) {
-            if ($issue['status'] == 0) { // 0 = Pendente
-                $pending_issues[] = $issue;
-            }
-        }
+        // Filter only pending issues for the block view (status = 0).
+        $pendingissues = array_filter($allissues, function($issue) {
+            return (int)$issue['status'] === 0;
+        });
 
-        // 3. Renderiza a lista
-        if (empty($pending_issues)) {
-            $this->content->text = '<div class="alert alert-success">'.get_string('no_issues_found', 'block_teacher_checklist').'</div>';
-        } else {
-            $html = '<ul class="list-group list-group-flush block_teacher_checklist">';
-            
-            // Mostra apenas os 5 primeiros no bloco
-            $limit = 5;
-            $count = 0;
-            
-            foreach ($pending_issues as $issue) {
-                if ($count >= $limit) break;
-                
-                $html .= '<li class="list-group-item d-flex justify-content-between align-items-center" style="padding: 0.5rem 0;">';
-                
-                // Ícone + Link
-                $html .= '<div style="max-width: 70%;">'; // Limita largura para não quebrar layout
-                $html .= '<img src="'.$issue['icon'].'" class="icon" alt="" style="margin-right:4px;" /> ';
-                
-                // Se for item manual sem link, não poe o <a>
-                if (isset($issue['url']) && $issue['url'] != '#') {
-                    $html .= '<a href="'.$issue['url'].'">'.$issue['title'].'</a>';
-                } else {
-                    $html .= '<span>'.$issue['title'].'</span>';
-                }
-                $html .= '</div>';
-                
-                // --- BOTÕES DE AÇÃO ---
-                $html .= '<div class="actions">';
+        // 3. Render Content.
+        /** @var \block_teacher_checklist\output\renderer $renderer */
+        $renderer = $this->page->get_renderer('block_teacher_checklist');
+        
+        $this->content->text = $renderer->render_block_summary($pendingissues, $COURSE->id);
 
-                // Botão CONCLUIR (✔) - Apenas para itens MANUAIS
-                if ($issue['type'] === 'manual') {
-                    $docid = isset($issue['id']) ? $issue['id'] : 0; // Se for manual, o ID é importante
-                    
-                    $html .= '<a href="#" class="btn-action text-success" style="margin-right: 5px;" 
-                                data-action="toggle-status" 
-                                data-courseid="'.$COURSE->id.'" 
-                                data-type="'.$issue['type'].'" 
-                                data-subtype="'.$issue['subtype'].'" 
-                                data-docid="'.$docid.'" 
-                                data-status="1" 
-                                title="Concluir">✔</a> ';
-                }
-
-                // Botão IGNORAR (✖) - Aparece para TODOS
-                $html .= '<a href="#" class="btn-action text-danger" 
-                            data-action="toggle-status" 
-                            data-courseid="'.$COURSE->id.'" 
-                            data-type="'.$issue['type'].'" 
-                            data-subtype="'.$issue['subtype'].'" 
-                            data-docid="'.$issue['docid'].'" 
-                            data-status="2" 
-                            title="Ignorar/Remover">✖</a>';
-
-                $html .= '</div>';
-                // --- FIM BOTÕES ---
-                
-                $html .= '</li>';
-                $count++;
-            }
-            $html .= '</ul>';
-            
-            // Se tiver mais itens, avisa
-            if (count($pending_issues) > $limit) {
-                $html .= '<div class="text-center small text-muted">E mais '.(count($pending_issues) - $limit).' pendências...</div>';
-            }
-
-            $this->content->text = $html;
-        }
-
-        // Injeta o JavaScript para os cliques funcionarem
+        // Inject JavaScript.
         $this->page->requires->js_call_amd('block_teacher_checklist/actions', 'init');
-
-        // Rodapé com link para a página completa
-        $url = new moodle_url('/blocks/teacher_checklist/view.php', ['id' => $COURSE->id]);
-        $this->content->footer = html_writer::link($url, get_string('view_full_report', 'block_teacher_checklist'));
 
         return $this->content;
     }
-    
+
+    /**
+     * Allow the block to be added to course view.
+     *
+     * @return array
+     */
     public function applicable_formats() {
-        return array('course-view' => true);
+        return ['course-view' => true];
     }
 }
