@@ -105,6 +105,21 @@ foreach ($allitems as $item) {
     }
 }
 
+foreach ($pending as $index => &$item) {
+    $item['number'] = $index + 1;
+}
+unset($item); // Boa prática ao usar referência (&)
+
+foreach ($ignored as $index => &$item) {
+    $item['number'] = $index + 1;
+}
+unset($item);
+
+foreach ($done as $index => &$item) {
+    $item['number'] = $index + 1;
+}
+unset($item);
+
 // --- 3. Prepare Template Data ---
 $data = [
     'courseid' => $courseid,
