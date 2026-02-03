@@ -30,6 +30,16 @@
     @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 }}
 <div class="block-teacher-checklist-summary">
+    <div class="form-check form-switch mb-3 d-flex justify-content-between align-items-center ps-0">
+        <label class="form-check-label small text-muted mb-0 me-2" for="blockScanToggle">
+            {{#str}} scan_enabled, block_teacher_checklist {{/str}}
+        </label>
+        <input class="form-check-input toggle-scan-switch ms-0" type="checkbox" id="blockScanToggle"
+               data-courseid="{{courseid}}" 
+               {{#is_scan_active}}checked{{/is_scan_active}}>
+    </div>
+    
+    <hr class="my-2">
     {{#hasissues}}
         <ul class="list-group list-group-flush mb-3">
             {{#issues}}

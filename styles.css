@@ -1,0 +1,61 @@
+/* ARQUIVO: blocks/teacher_checklist/styles.css */
+
+/* 1. SELETOR CORRIGIDO:
+   Usamos '.block_teacher_checklist' para garantir que funcione
+   no Dashboard, na Página do Curso e no Relatório. */
+
+/* Reseta o container do grupo (remove borda externa dupla) */
+.block_teacher_checklist .mform fieldset,
+.block_teacher_checklist .mform .fgroup,
+.block_teacher_checklist .mform .fitem {
+    border: 0 none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+}
+
+/* 2. ACESSIBILIDADE: Esconde o título (Legend) visualmente */
+.block_teacher_checklist .mform fieldset legend {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+/* 3. LAYOUT FLEXBOX: Alinha Input e Botão */
+.block_teacher_checklist .mform .fitem .felement {
+    display: flex;
+    align-items: center;
+    gap: 5px;            /* Espaço entre input e botão */
+    width: 100%;
+    border: 0 !important; /* Garante que o container flex não tenha borda */
+}
+
+/* 4. INPUT DE TEXTO: Ocupa o espaço sobrando */
+.block_teacher_checklist .mform input[type="text"] {
+    flex-grow: 1;
+    margin-bottom: 0 !important;
+    /* Se o seu tema removeu a borda do input, forçamos ela aqui: */
+    border: 1px solid #ced4da; 
+    border-radius: 4px;
+    height: auto;
+    padding: 6px 12px;
+}
+
+/* 5. BOTÃO: Evita deformação */
+.block_teacher_checklist .mform input[type="submit"] {
+    flex-shrink: 0;
+    margin-bottom: 0 !important;
+    margin-left: 0 !important;
+}
+
+/* 6. REMOÇÃO DE PADDING EXTRA DO TEMA */
+/* Alguns temas colocam padding excessivo dentro dos formulários em blocos */
+.block_teacher_checklist .mform .fitem {
+    margin-bottom: 0 !important;
+}

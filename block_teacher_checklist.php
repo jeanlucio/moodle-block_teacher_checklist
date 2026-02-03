@@ -55,6 +55,7 @@ class block_teacher_checklist extends block_base {
         // 2. Fetch Auto Issues via Scanner.
         $scanner = new \block_teacher_checklist\scanner($COURSE);
         $autoissues = $scanner->get_all_issues();
+        $isscanactive = $scanner->is_active();
 
         // 3. Fetch Manual Pending Issues (Fix: Adicionando itens manuais ao bloco).
         $manualrecords = $DB->get_records('block_teacher_checklist', [
@@ -94,7 +95,7 @@ class block_teacher_checklist extends block_base {
         $renderer = $this->page->get_renderer('block_teacher_checklist');
         
         // Renderiza (agora o renderer vai ocultar os checkboxes)
-        $this->content->text = $renderer->render_block_summary($pendingissues, $COURSE->id);
+        $this->content->text = $renderer->render_block_summary($pendingissues, $COURSE->id, $isscanactive);
 
         // Inject JavaScript.
         $this->page->requires->js_call_amd('block_teacher_checklist/actions', 'init');

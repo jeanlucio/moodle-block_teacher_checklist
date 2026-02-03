@@ -98,16 +98,16 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, Aja
             });
 
             // 5. AUTO SCAN TOGGLE SWITCH
-            $('#toggleScan').on('change', function() {
+            $('.toggle-scan-switch').on('change', function() {
                 var isChecked = $(this).is(':checked');
                 var courseId = $(this).data('courseid');
 
                 processUpdates([{
                     courseid: courseId,
-                    type: 'config',
-                    subtype: 'scan_enabled',
-                    docid: 0,
-                    status: isChecked ? 1 : 0
+                    type:     'config',
+                    subtype:  'scan_enabled',
+                    docid:    0,
+                    status:   isChecked ? 1 : 0
                 }]);
             });
         }

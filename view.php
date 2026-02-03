@@ -7,12 +7,14 @@
 // (at your option) any later version.
 //
 // Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
+// but WITHOUT ANY WARRANTY;
+// without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+// See the GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.
+// If not, see <http://www.gnu.org/licenses/>.
 
 require_once('../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
@@ -35,26 +37,27 @@ $PAGE->set_title($course->shortname . ': ' . get_string('checklist_title', 'bloc
 /** @var \block_teacher_checklist\output\renderer $renderer */
 $renderer = $PAGE->get_renderer('block_teacher_checklist');
 
-// --- 1. Form Processing ---
-$mform = new \block_teacher_checklist\form\add_item_form(null, ['id' => $courseid]);
+// --- 1. Form Processing (Manual HTML - Secure & Clean Layout) ---
+// Verifica se dados foram enviados E se a chave de sessão é válida (Exigência Moodle.org)
+if (data_submitted() && confirm_sesskey()) {
+    // Limpeza de dados (Exigência Moodle.org)
+    $newtitle = optional_param('manual_title', '', PARAM_TEXT);
 
-if ($mform->is_cancelled()) {
-    // Do nothing.
-} else if ($data = $mform->get_data()) {
-    // Insert new manual item.
-    $record = new stdClass();
-    $record->courseid = $course->id;
-    $record->userid = $USER->id;
-    $record->type = 'manual';
-    $record->title = $data->manual_title;
-    $record->status = 0; // Pending.
-    $record->timecreated = time();
-    $record->timemodified = time();
+    if (!empty($newtitle) && trim($newtitle) !== '') {
+        $record = new stdClass();
+        $record->courseid = $course->id;
+        $record->userid = $USER->id;
+        $record->type = 'manual';
+        $record->title = $newtitle;
+        $record->status = 0; // Pendente
+        $record->timecreated = time();
+        $record->timemodified = time();
 
-    $DB->insert_record('block_teacher_checklist', $record);
+        $DB->insert_record('block_teacher_checklist', $record);
 
-    // Redirect to prevent resubmission.
-    redirect($PAGE->url, get_string('msg_item_added', 'block_teacher_checklist'));
+        // Redireciona para evitar reenvio do formulário (Post-Redirect-Get pattern)
+        redirect($PAGE->url, get_string('msg_item_added', 'block_teacher_checklist'));
+    }
 }
 
 // --- 2. Data Gathering ---
@@ -74,7 +77,7 @@ foreach ($manualrecords as $rec) {
         'type' => 'manual',
         'subtype' => '',
         'docid' => 0,
-        'title' => $rec->title,
+        'title' => format_string($rec->title), // Usando format_string para segurança
         'url' => '#',
         'icon' => $OUTPUT->image_url('t/edit'),
         'status' => (int)$rec->status,
@@ -105,8 +108,9 @@ foreach ($allitems as $item) {
 // --- 3. Prepare Template Data ---
 $data = [
     'courseid' => $courseid,
+    'action_url' => $PAGE->url->out(false), // Necessário para o formulário manual HTML
+    'sesskey' => sesskey(),                 // OBRIGATÓRIO para segurança do formulário manual
     'is_scan_active' => $isscanactive,
-    'add_item_form' => $mform->render(),
     
     // Tab Counts.
     'count_pending' => count($pending),

@@ -35,25 +35,27 @@ class renderer extends plugin_renderer_base {
      *
      * @param array $issues List of pending issues.
      * @param int $courseid The current course ID.
+     * @param bool $isscanactive Status of the scanner (NOVO PARÂMETRO)
      * @return string HTML for the block content.
      */
-    public function render_block_summary(array $issues, int $courseid): string {
+    public function render_block_summary(array $issues, int $courseid, bool $isscanactive): string {
         $limit = 5;
         $displayissues = array_slice($issues, 0, $limit);
         $formattedissues = [];
 
         foreach ($displayissues as $issue) {
-            // NOVIDADE: Passamos 'false' no 4º argumento para esconder o checkbox no bloco
             $formattedissues[] = $this->prepare_issue_for_template($issue, $courseid, 'pending', false);
         }
 
         $data = [
             'hasissues' => !empty($issues),
             'issues' => $formattedissues,
+            'is_scan_active' => $isscanactive, // <--- ADICIONAR AQUI
+            'courseid' => $courseid,           // <--- ADICIONAR AQUI (Importante para o data-courseid do botão)
             'moreissues' => count($issues) > $limit ? ['count' => count($issues) - $limit] : false,
             'fullreporturl' => (new moodle_url('/blocks/teacher_checklist/view.php', ['id' => $courseid]))->out(false),
         ];
-
+        
         return $this->render_from_template('block_teacher_checklist/block_summary', $data);
     }
 

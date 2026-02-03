@@ -43,7 +43,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>{{checklist_title}}</h2>
         <div class="form-check form-switch" title="{{#str}} scan_enabled_help, block_teacher_checklist {{/str}}">
-            <input class="form-check-input" type="checkbox" id="toggleScan" 
+        <input class="form-check-input toggle-scan-switch" type="checkbox" id="toggleScan" 
                    data-courseid="{{courseid}}" 
                    {{#is_scan_active}}checked{{/is_scan_active}}>
             <label class="form-check-label small text-muted" for="toggleScan">
@@ -54,8 +54,29 @@
 
     <div class="card mb-4 bg-light">
         <div class="card-body">
-            {{{add_item_form}}}
-            
+            <form method="post" action="{{action_url}}">
+                <input type="hidden" name="sesskey" value="{{sesskey}}">
+                
+                <div class="mb-2">
+                    <label for="manual_title" class="form-label fw-bold">
+                        {{#str}} new_manual_item, block_teacher_checklist {{/str}}
+                    </label>
+                </div>
+                
+                <div class="d-flex align-items-center">
+                    <input type="text" 
+                           name="manual_title" 
+                           id="manual_title" 
+                           class="form-control me-2 flex-grow-1" 
+                           placeholder="{{#str}} placeholder_manual, block_teacher_checklist {{/str}}" 
+                           required>
+                    
+                    <button type="submit" class="btn btn-primary text-nowrap">
+                        {{#str}} add_btn, block_teacher_checklist {{/str}}
+                    </button>
+                </div>
+            </form>
+           
             <div class="mt-2">
                 <a class="small text-muted text-decoration-none" data-bs-toggle="collapse" href="#helpManual" role="button">
                     <i class="fa fa-question-circle me-1"></i>{{#str}} help_manual_title, block_teacher_checklist {{/str}}
