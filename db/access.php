@@ -14,6 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Capability definitions for the teacher_checklist block.
+ *
+ * @package    block_teacher_checklist
+ * @copyright  2026 Jean Lúcio <jeanlucio@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = [

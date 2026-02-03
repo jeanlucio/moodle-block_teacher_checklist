@@ -25,8 +25,6 @@ use core_privacy\local\request\writer;
 use core_privacy\local\request\userlist;
 use core_privacy\local\request\approved_userlist;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Privacy provider implementation for block_teacher_checklist.
  *
@@ -36,11 +34,13 @@ defined('MOODLE_INTERNAL') || die();
  */
 class provider implements
     \core_privacy\local\metadata\provider,
-    \core_privacy\local\request\plugin\provider,
-    \core_privacy\local\request\core_userlist_provider { // <--- NOVIDADE: Adicionamos esta interface
-
+    \core_privacy\local\request\core_userlist_provider,
+    \core_privacy\local\request\plugin\provider {
     /**
-     * Declara quais dados este plugin armazena (Metadados).
+     * Declares what data this plugin stores (Metadata).
+     *
+     * @param collection $collection The collection object.
+     * @return collection The updated collection object.
      */
     public static function get_metadata(collection $collection): collection {
         $collection->add_database_table(
@@ -58,19 +58,22 @@ class provider implements
     }
 
     /**
-     * Encontra todos os contextos (cursos) onde um usuário tem dados.
+     * Finds all contexts (courses) where a user has data.
+     *
+     * @param int $userid The user ID.
+     * @return contextlist The context list object.
      */
     public static function get_contexts_for_userid(int $userid): contextlist {
         $contextlist = new contextlist();
-        
+
         $sql = "SELECT ctx.id
                   FROM {block_teacher_checklist} b
                   JOIN {context} ctx ON ctx.instanceid = b.courseid AND ctx.contextlevel = :contextlevel
                  WHERE b.userid = :userid";
-        
+
         $params = [
             'contextlevel' => CONTEXT_COURSE,
-            'userid' => $userid
+            'userid' => $userid,
         ];
 
         $contextlist->add_from_sql($sql, $params);
@@ -79,8 +82,9 @@ class provider implements
     }
 
     /**
-     * NOVIDADE: Encontra todos os usuários que têm dados em um contexto específico.
-     * Isso resolve o aviso laranja.
+     * Finds all users who have data in a specific context.
+     *
+     * @param userlist $userlist The userlist object.
      */
     public static function get_users_in_context(userlist $userlist) {
         $context = $userlist->get_context();
@@ -92,12 +96,14 @@ class provider implements
         $sql = "SELECT userid
                   FROM {block_teacher_checklist}
                  WHERE courseid = ?";
-        
+
         $userlist->add_from_sql('userid', $sql, [$context->instanceid]);
     }
 
     /**
-     * Exporta os dados do usuário.
+     * Exports user data.
+     *
+     * @param approved_contextlist $contextlist The approved context list object.
      */
     public static function export_user_data(approved_contextlist $contextlist) {
         global $DB;
@@ -115,7 +121,7 @@ class provider implements
 
             $records = $DB->get_records('block_teacher_checklist', [
                 'courseid' => $context->instanceid,
-                'userid' => $user->id
+                'userid' => $user->id,
             ]);
 
             if (empty($records)) {
@@ -142,7 +148,9 @@ class provider implements
     }
 
     /**
-     * Apaga todos os dados de um contexto.
+     * Deletes all data for a context.
+     *
+     * @param \context $context The context object.
      */
     public static function delete_data_for_all_users_in_context(\context $context) {
         global $DB;
@@ -155,7 +163,9 @@ class provider implements
     }
 
     /**
-     * Apaga dados de um usuário específico (Versão ContextList).
+     * Deletes data for a specific user (ContextList version).
+     *
+     * @param approved_contextlist $contextlist The approved context list object.
      */
     public static function delete_data_for_user(approved_contextlist $contextlist) {
         global $DB;
@@ -170,17 +180,18 @@ class provider implements
             if ($context->contextlevel != CONTEXT_COURSE) {
                 continue;
             }
-            
+
             $DB->delete_records('block_teacher_checklist', [
                 'courseid' => $context->instanceid,
-                'userid' => $userid
+                'userid' => $userid,
             ]);
         }
     }
 
     /**
-     * NOVIDADE: Apaga dados de múltiplos usuários em um contexto (Versão UserList).
-     * Isso completa o requisito do aviso laranja.
+     * Deletes data for multiple users in a context (UserList version).
+     *
+     * @param approved_userlist $userlist The approved user list object.
      */
     public static function delete_data_for_users(approved_userlist $userlist) {
         global $DB;
@@ -197,7 +208,7 @@ class provider implements
             return;
         }
 
-        list($insql, $inparams) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
+        [$insql, $inparams] = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
         $inparams['courseid'] = $context->instanceid;
 
         $DB->delete_records_select(
@@ -208,13 +219,19 @@ class provider implements
     }
 
     /**
-     * Helper para traduzir o status.
+     * Helper to translate the status.
+     *
+     * @param int $status The status code.
+     * @return string The status name.
      */
     private static function get_status_name($status) {
         switch ($status) {
-            case 1: return 'Done';
-            case 2: return 'Ignored';
-            default: return 'Pending';
+            case 1:
+                return 'Done';
+            case 2:
+                return 'Ignored';
+            default:
+                return 'Pending';
         }
     }
 }

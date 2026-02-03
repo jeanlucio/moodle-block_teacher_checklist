@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Teacher Checklist Block.
  *
@@ -24,7 +22,6 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class block_teacher_checklist extends block_base {
-
     /**
      * Initialize the block.
      */
@@ -38,8 +35,7 @@ class block_teacher_checklist extends block_base {
      * @return stdClass
      */
     public function get_content() {
-        global $COURSE, $DB, $OUTPUT; // Adicionado $DB e $OUTPUT
-
+        global $COURSE, $DB, $OUTPUT; // Added $DB and $OUTPUT.
         if ($this->content !== null) {
             return $this->content;
         }
@@ -57,11 +53,11 @@ class block_teacher_checklist extends block_base {
         $autoissues = $scanner->get_all_issues();
         $isscanactive = $scanner->is_active();
 
-        // 3. Fetch Manual Pending Issues (Fix: Adicionando itens manuais ao bloco).
+        // 3. Fetch Manual Pending Issues (Fix: Adding manual items to the block).
         $manualrecords = $DB->get_records('block_teacher_checklist', [
-            'courseid' => $COURSE->id, 
-            'type' => 'manual', 
-            'status' => 0 // Apenas pendentes
+            'courseid' => $COURSE->id,
+            'type' => 'manual',
+            'status' => 0, // Only pending.
         ]);
 
         $manualissues = [];
@@ -73,28 +69,25 @@ class block_teacher_checklist extends block_base {
                 'docid' => 0,
                 'title' => $rec->title,
                 'url' => '#',
-                'icon' => $OUTPUT->image_url('t/edit'), // Ícone padrão de edição
+                'icon' => $OUTPUT->image_url('t/edit'), // Default edit icon.
                 'status' => (int)$rec->status,
             ];
         }
 
         // 4. Merge and Filter.
-        // Funde os dois arrays
+        // Merge the two arrays.
         $allitems = array_merge($autoissues, $manualissues);
 
-        // Garante que só temos pendentes (o scanner pode retornar outros status se não filtrado lá)
-        $pendingissues = array_filter($allitems, function($item) {
+        // Ensure we only have pending items (scanner might return others if not filtered there).
+        $pendingissues = array_filter($allitems, function ($item) {
             return (int)$item['status'] === 0;
         });
-
-        // Opcional: Ordenar para manuais aparecerem primeiro ou misturados? 
-        // Por padrão o array_merge coloca manuais no fim. Se quiser misturar, usaria usort aqui.
 
         // 5. Render Content.
         /** @var \block_teacher_checklist\output\renderer $renderer */
         $renderer = $this->page->get_renderer('block_teacher_checklist');
-        
-        // Renderiza (agora o renderer vai ocultar os checkboxes)
+
+        // Render (now the renderer will hide the checkboxes).
         $this->content->text = $renderer->render_block_summary($pendingissues, $COURSE->id, $isscanactive);
 
         // Inject JavaScript.

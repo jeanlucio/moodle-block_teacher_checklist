@@ -5,8 +5,14 @@
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-
-defined('MOODLE_INTERNAL') || die();
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Define the restore structure steps for the teacher_checklist block.
@@ -16,47 +22,56 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class restore_teacher_checklist_structure_step extends restore_structure_step {
-
+    /**
+     * Define the structure of the restore.
+     *
+     * @return array
+     */
     protected function define_structure() {
         $paths = [];
         $paths[] = new restore_path_element('checklist_item', '/block/teacher_checklist/checklist_items/checklist_item');
         return $paths;
     }
 
+    /**
+     * Process the checklist item data.
+     *
+     * @param stdClass $data The data object from backup XML.
+     * @throws dml_exception
+     */
     public function process_checklist_item($data) {
         global $DB, $USER;
 
         $data = (object)$data;
         $data->courseid = $this->get_courseid();
 
-        // Como alteramos o backup para trazer SÓ manuais, 
-        // qualquer coisa diferente disso é anomalia e ignoramos.
+        // As we changed the backup to only fetch manual items,
+        // anything else is an anomaly and we ignore it.
         if ($data->type !== 'manual') {
             return;
         }
 
-        // 1. MAPEAMENTO DE USUÁRIO
+        // 1. User mapping.
         $newuserid = $this->get_mappingid('user', $data->userid);
         $data->userid = $newuserid ? $newuserid : $USER->id;
 
-        // 2. LIMPEZA DE DADOS
-        // Manuais não usam docid, garantimos que seja 0
+        // 2. Data cleaning.
+        // Manual items do not use docid, ensure it is 0.
         $data->docid = 0;
-        
-        // OPCIONAL: Se você quiser que TODAS as manuais voltem como "Pendentes" (Status 0)
-        // descomente a linha abaixo. Caso contrário, ele mantém o status original (Feito/Ignorado).
-        // $data->status = 0; 
 
-        // 3. GRAVAÇÃO SEGURA (Prevenção de SQL Text Error)
-        // Usamos sql_compare_text pois o título é TEXT
-        $compare_title = $DB->sql_compare_text('title');
-        
-        $sql = "SELECT id 
-                FROM {block_teacher_checklist} 
-                WHERE courseid = ? 
-                  AND type = 'manual' 
-                  AND $compare_title = ?";
-                  
+        // OPTIONAL: If you want ALL manual items to return as 'Pending' (Status 0)
+        // uncomment the line below. Otherwise, it keeps the original status (Done/Ignored).
+
+        // 3. Safe recording (Prevention of SQL Text Error).
+        // We use sql_compare_text because the title is TEXT.
+        $comparetitle = $DB->sql_compare_text('title');
+
+        $sql = "SELECT id
+                FROM {block_teacher_checklist}
+                WHERE courseid = ?
+                  AND type = 'manual'
+                  AND $comparetitle = ?";
+
         $exists = $DB->record_exists_sql($sql, [$data->courseid, $data->title]);
 
         if (!$exists) {

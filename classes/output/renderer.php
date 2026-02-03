@@ -16,8 +16,6 @@
 
 namespace block_teacher_checklist\output;
 
-defined('MOODLE_INTERNAL') || die();
-
 use plugin_renderer_base;
 use moodle_url;
 
@@ -29,13 +27,12 @@ use moodle_url;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class renderer extends plugin_renderer_base {
-
     /**
      * Renders the block content (sidebar summary).
      *
      * @param array $issues List of pending issues.
      * @param int $courseid The current course ID.
-     * @param bool $isscanactive Status of the scanner (NOVO PARÂMETRO)
+     * @param bool $isscanactive Status of the scanner.
      * @return string HTML for the block content.
      */
     public function render_block_summary(array $issues, int $courseid, bool $isscanactive): string {
@@ -50,12 +47,12 @@ class renderer extends plugin_renderer_base {
         $data = [
             'hasissues' => !empty($issues),
             'issues' => $formattedissues,
-            'is_scan_active' => $isscanactive, // <--- ADICIONAR AQUI
-            'courseid' => $courseid,           // <--- ADICIONAR AQUI (Importante para o data-courseid do botão)
+            'is_scan_active' => $isscanactive, // Scanner status.
+            'courseid' => $courseid, // Important for the button data-courseid.
             'moreissues' => count($issues) > $limit ? ['count' => count($issues) - $limit] : false,
             'fullreporturl' => (new moodle_url('/blocks/teacher_checklist/view.php', ['id' => $courseid]))->out(false),
         ];
-        
+
         return $this->render_from_template('block_teacher_checklist/block_summary', $data);
     }
 
@@ -73,16 +70,23 @@ class renderer extends plugin_renderer_base {
         $docid = ($issue['type'] === 'manual') ? (int) $issue['id'] : (int) ($issue['docid'] ?? 0);
 
         // Security check for icon.
+        // Hybrid support for moodle_url AND simple strings (plugin review standard).
         $icon = $issue['icon'];
+
         if ($icon instanceof moodle_url) {
+            // If it is already a URL object (from modules like Assign, Quiz), just convert to string.
             $icon = $icon->out(false);
+        } else if (is_string($icon)) {
+            // If simple string (e.g. 'i/hide', 't/edit'), generate full URL via Output API.
+            // This ensures it works even if Moodle is not at root.
+            $icon = $this->output->image_url($icon)->out(false);
         }
 
         // Prepare context.
         $context = [
             'id' => $issue['id'] ?? uniqid(),
             'isdone' => ($mode === 'done'),
-            'bulkable' => $bulkable, // <--- AGORA USA O PARÂMETRO
+            'bulkable' => $bulkable,
             'type' => $issue['type'],
             'subtype' => $issue['subtype'],
             'docid' => $docid,

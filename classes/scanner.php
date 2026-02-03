@@ -16,8 +16,6 @@
 
 namespace block_teacher_checklist;
 
-defined('MOODLE_INTERNAL') || die();
-
 use stdClass;
 use moodle_url;
 use context_course;
@@ -30,7 +28,6 @@ use context_course;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class scanner {
-
     /** @var stdClass The course object. */
     protected $course;
 
@@ -49,7 +46,7 @@ class scanner {
         global $DB;
         $this->course = $course;
         $this->modinfo = get_fast_modinfo($course);
-        
+
         // Load ignored items efficiently.
         // We construct a key "subtype-docid" in PHP to avoid complex cross-db SQL concatenation.
         // FIX: Added 'id' as the first column to ensure unique array keys in get_records return.
@@ -72,7 +69,7 @@ class scanner {
      */
     public function is_active(): bool {
         global $DB;
-        
+
         $record = $DB->get_record('block_teacher_checklist', [
             'courseid' => $this->course->id,
             'type' => 'config',
@@ -98,7 +95,7 @@ class scanner {
         }
 
         $issues = [];
-        
+
         // Merge results from all scanners.
         $issues = array_merge($issues, $this->scan_course_visibility());
         $issues = array_merge($issues, $this->scan_no_evaluations());
@@ -114,6 +111,8 @@ class scanner {
 
     /**
      * Check if course is hidden.
+     *
+     * @return array List of issues.
      */
     protected function scan_course_visibility(): array {
         $issues = [];
@@ -124,7 +123,7 @@ class scanner {
                 0,
                 get_string('issue_course_hidden', 'block_teacher_checklist'),
                 new moodle_url('/course/edit.php', ['id' => $this->course->id]),
-                new moodle_url('/pix/i/hide.png'),
+                'i/hide',
                 $status,
                 'high'
             );
@@ -134,11 +133,13 @@ class scanner {
 
     /**
      * Check if course has no gradebook items.
+     *
+     * @return array List of issues.
      */
     protected function scan_no_evaluations(): array {
         global $DB;
         $issues = [];
-        
+
         $count = $DB->count_records_select('grade_items', 'courseid = ? AND itemtype = ?', [$this->course->id, 'mod']);
 
         if ($count == 0) {
@@ -148,7 +149,7 @@ class scanner {
                 999,
                 get_string('issue_no_evaluations', 'block_teacher_checklist'),
                 new moodle_url('/grade/edit/tree/index.php', ['id' => $this->course->id]),
-                new moodle_url('/pix/i/grades.png'),
+                'i/grades',
                 $status
             );
         }
@@ -157,6 +158,8 @@ class scanner {
 
     /**
      * Check for assignment configuration issues and grading backlog.
+     *
+     * @return array List of issues.
      */
     protected function scan_assignments_issues(): array {
         global $DB;
@@ -173,7 +176,7 @@ class scanner {
                        ) as pending_grading
                 FROM {assign} a
                 WHERE a.course = ?";
-        
+
         $assigns = $DB->get_records_sql($sql, [$this->course->id]);
 
         foreach ($assigns as $assign) {
@@ -182,12 +185,12 @@ class scanner {
                 continue;
             }
 
-            // check 1: Grading backlog.
+            // Check 1: Grading backlog.
             if ($assign->pending_grading > 0) {
                 $status = $this->get_status('mod_assign_grading', $assign->id);
                 $title = get_string('issue_assign_grading', 'block_teacher_checklist', $assign->pending_grading) .
                          ' ' . $assign->name;
-                
+
                 $issues[] = $this->make_issue(
                     'mod_assign_grading',
                     $assign->id,
@@ -199,7 +202,7 @@ class scanner {
                 );
             }
 
-            // check 2: No due date.
+            // Check 2: No due date.
             if ($assign->duedate == 0) {
                 $status = $this->get_status('mod_assign_nodate', $assign->id);
                 $issues[] = $this->make_issue(
@@ -212,7 +215,7 @@ class scanner {
                 );
             }
 
-            // check 3: No description.
+            // Check 3: No description.
             if (empty(strip_tags($assign->intro))) {
                 $status = $this->get_status('mod_assign_nodesc', $assign->id);
                 $issues[] = $this->make_issue(
@@ -231,6 +234,8 @@ class scanner {
 
     /**
      * Check forum issues.
+     *
+     * @return array List of issues.
      */
     protected function scan_forum_issues(): array {
         global $DB;
@@ -240,7 +245,7 @@ class scanner {
                        (SELECT COUNT(fd.id) FROM {forum_discussions} fd WHERE fd.forum = f.id) as post_count
                 FROM {forum} f
                 WHERE f.course = ?";
-        
+
         $forums = $DB->get_records_sql($sql, [$this->course->id]);
 
         foreach ($forums as $forum) {
@@ -266,6 +271,8 @@ class scanner {
 
     /**
      * Check Quiz structure issues.
+     *
+     * @return array List of issues.
      */
     protected function scan_quiz_issues(): array {
         global $DB;
@@ -275,7 +282,7 @@ class scanner {
                        (SELECT COUNT(qs.id) FROM {quiz_slots} qs WHERE qs.quizid = q.id) as question_count
                 FROM {quiz} q
                 WHERE q.course = ?";
-        
+
         $quizzes = $DB->get_records_sql($sql, [$this->course->id]);
 
         foreach ($quizzes as $quiz) {
@@ -313,6 +320,8 @@ class scanner {
 
     /**
      * Check Quiz manual grading backlog.
+     *
+     * @return array List of issues.
      */
     protected function scan_quiz_grading(): array {
         global $DB;
@@ -357,6 +366,8 @@ class scanner {
 
     /**
      * Check for activities with completion disabled (where it might be expected).
+     *
+     * @return array List of issues.
      */
     protected function scan_completion_disabled(): array {
         $issues = [];
@@ -382,10 +393,10 @@ class scanner {
 
     /**
      * Check for empty sections that are visible.
+     *
+     * @return array List of issues.
      */
     protected function scan_empty_sections(): array {
-        global $OUTPUT;
-        
         $issues = [];
         $sections = $this->modinfo->get_section_info_all();
 
@@ -397,16 +408,13 @@ class scanner {
             if ($section->visible && empty($section->sequence) && empty($section->summary)) {
                 $status = $this->get_status('section', $section->id);
                 $sectionname = get_section_name($this->course, $section);
-                
-                // Using standard folder icon as a placeholder for section.
-                $icon = $OUTPUT->image_url('i/folder');
 
                 $issues[] = $this->make_issue(
                     'section',
                     $section->id,
                     get_string('issue_section_empty', 'block_teacher_checklist', $sectionname),
                     new moodle_url('/course/editsection.php', ['id' => $section->id]),
-                    $icon,
+                    'i/folder',
                     $status
                 );
             }
@@ -416,6 +424,10 @@ class scanner {
 
     /**
      * Helper to retrieve CM object.
+     *
+     * @param string $modname The module name.
+     * @param int $instanceid The instance ID.
+     * @return \cm_info|null The CM object or null.
      */
     protected function get_cm_by_instance($modname, $instanceid) {
         $instances = $this->modinfo->get_instances_of($modname);
@@ -424,6 +436,10 @@ class scanner {
 
     /**
      * Helper to determine status from cached ignored items.
+     *
+     * @param string $subtype The subtype identifier.
+     * @param int $docid The document ID.
+     * @return int The status.
      */
     protected function get_status($subtype, $docid): int {
         $key = $subtype . '-' . $docid;
@@ -432,6 +448,15 @@ class scanner {
 
     /**
      * Helper to build the issue array structure.
+     *
+     * @param string $subtype The subtype identifier.
+     * @param int $docid The document ID.
+     * @param string $title The issue title.
+     * @param \moodle_url|string $url The action URL.
+     * @param string $icon The icon identifier.
+     * @param int $status The issue status.
+     * @param string $severity The issue severity (default 'normal').
+     * @return array The constructed issue array.
      */
     protected function make_issue($subtype, $docid, $title, $url, $icon, $status, $severity = 'normal'): array {
         return [

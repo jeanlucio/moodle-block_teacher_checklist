@@ -1,3 +1,25 @@
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Javascript actions for the teacher checklist block.
+ *
+ * @module      block_teacher_checklist/actions
+ * @copyright   2026 Jean Lúcio <jeanlucio@gmail.com>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, Ajax, Notification, Str) {
 
     return {
@@ -20,7 +42,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, Aja
                 }).fail(Notification.exception);
             }
 
-            // 1. INDIVIDUAL TOGGLE BUTTONS (Done, Ignore, Restore)
+            // 1. INDIVIDUAL TOGGLE BUTTONS (Done, Ignore, Restore).
             // We use delegated events on document or a main container for dynamic content support.
             $('body').on('click', '[data-action="toggle-status"]', function(e) {
                 e.preventDefault();
@@ -35,7 +57,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, Aja
                 }]);
             });
 
-            // 2. "SELECT ALL" LOGIC
+            // 2. "SELECT ALL" LOGIC.
             $('.select-all-toggle').on('change', function() {
                 var targetList = $(this).data('target');
                 var isChecked = $(this).is(':checked');
@@ -43,9 +65,9 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, Aja
                 $(targetList).find('.item-checkbox').prop('checked', isChecked).trigger('change');
             });
 
-            // 3. BULK ACTIONS VISIBILITY
+            // 3. BULK ACTIONS VISIBILITY.
             $('.item-checkbox').on('change', function() {
-                var container = $(this).closest('.tab-pane'); // Find parent tab pane
+                var container = $(this).closest('.tab-pane'); // Find parent tab pane.
                 var totalChecked = container.find('.item-checkbox:checked').length;
                 var bulkContainer = container.find('.bulk-actions-container');
 
@@ -53,12 +75,12 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, Aja
                     bulkContainer.fadeIn(200);
                 } else {
                     bulkContainer.fadeOut(200);
-                    // Uncheck main toggle if no items are checked
+                    // Uncheck main toggle if no items are checked.
                     container.find('.select-all-toggle').prop('checked', false);
                 }
             });
 
-            // 4. BULK ACTION BUTTONS
+            // 4. BULK ACTION BUTTONS.
             $('.bulk-btn').on('click', function(e) {
                 e.preventDefault();
                 var btn = $(this);
@@ -97,7 +119,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, Aja
                 }
             });
 
-            // 5. AUTO SCAN TOGGLE SWITCH
+            // 5. AUTO SCAN TOGGLE SWITCH.
             $('.toggle-scan-switch').on('change', function() {
                 var isChecked = $(this).is(':checked');
                 var courseId = $(this).data('courseid');

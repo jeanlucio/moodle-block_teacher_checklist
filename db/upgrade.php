@@ -5,14 +5,29 @@
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-
-defined('MOODLE_INTERNAL') || die();
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Função de atualização do bloco.
+ * Upgrade code for the teacher_checklist block.
  *
- * @param int $oldversion A versão antiga instalada no banco.
- * @return bool True se o upgrade for bem-sucedido.
+ * @package    block_teacher_checklist
+ * @copyright  2026 Jean Lúcio <jeanlucio@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+/**
+ * Upgrade function for the block.
+ *
+ * @package    block_teacher_checklist
+ * @param int $oldversion The old version of the block installed in the DB.
+ * @return bool True if upgrade is successful.
  */
 function xmldb_block_teacher_checklist_upgrade($oldversion) {
     global $DB;
@@ -21,23 +36,6 @@ function xmldb_block_teacher_checklist_upgrade($oldversion) {
 
     // Moodle v4.0.0 release upgrade line.
     // Put any upgrade step following this.
-
-    // Exemplo de como seria um upgrade futuro (apenas ilustrativo):
-    /*
-    if ($oldversion < 2026020100) {
-        // Define field XYZ to be added to block_teacher_checklist.
-        $table = new xmldb_table('block_teacher_checklist');
-        $field = new xmldb_field('new_column', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'status');
-
-        // Conditionally launch add field XYZ.
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-
-        // Checklist savepoint reached.
-        upgrade_block_savepoint(true, 2026020100, 'teacher_checklist');
-    }
-    */
 
     return true;
 }

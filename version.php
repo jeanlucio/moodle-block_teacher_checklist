@@ -14,10 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Version details for the teacher_checklist block.
+ *
+ * @package    block_teacher_checklist
+ * @copyright  2026 Jean Lúcio <jeanlucio@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'block_teacher_checklist'; // Nome técnico exato da pasta.
-$plugin->version   = 2026013101;                // Data de hoje (YYYYMMDD00).
-$plugin->requires  = 2022041900;                // Requer Moodle 4.0 ou superior.
-$plugin->maturity  = MATURITY_STABLE;           // Pronto para produção.
-$plugin->release   = '1.0.0';                   // Versão humana.
+$plugin->component = 'block_teacher_checklist';
+$plugin->version   = 2026013101;
+$plugin->requires  = 2024100700; // Requires Moodle 4.5 or later.
+$plugin->maturity  = MATURITY_STABLE;
+$plugin->release   = '1.0.0';

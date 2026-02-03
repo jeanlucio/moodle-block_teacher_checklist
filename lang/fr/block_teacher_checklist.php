@@ -14,6 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * French strings for the teacher_checklist block.
+ *
+ * @package    block_teacher_checklist
+ * @copyright  2026 Jean Lúcio <jeanlucio@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 defined('MOODLE_INTERNAL') || die();
 
 $string['add_btn'] = 'Ajouter';
@@ -22,7 +30,7 @@ $string['alert_none_done'] = 'Aucune tâche manuelle terminée pour le moment.';
 $string['alert_none_ignored'] = 'Aucun élément ignoré.';
 $string['andmore'] = 'Et {$a} de plus...';
 $string['bulk_actions'] = 'Avec la sélection :';
-$string['bulk_done'] = 'Marquer comme Fait';
+$string['bulk_done'] = 'Marcar comme Fait';
 $string['bulk_ignore'] = 'Ignorer';
 $string['bulk_restore'] = 'Restaurer';
 $string['bulk_select_all'] = 'Tout sélectionner';

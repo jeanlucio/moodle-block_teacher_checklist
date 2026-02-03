@@ -7,17 +7,22 @@
 // (at your option) any later version.
 //
 // Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY;
-// without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-// See the GNU General Public License for more details.
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.
-// If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Main view page for the teacher_checklist block.
+ *
+ * @package    block_teacher_checklist
+ * @copyright  2026 Jean Lúcio <jeanlucio@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 
 require_once('../../config.php');
-require_once($CFG->libdir . '/adminlib.php');
 
 $courseid = required_param('id', PARAM_INT);
 $course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
@@ -37,10 +42,10 @@ $PAGE->set_title($course->shortname . ': ' . get_string('checklist_title', 'bloc
 /** @var \block_teacher_checklist\output\renderer $renderer */
 $renderer = $PAGE->get_renderer('block_teacher_checklist');
 
-// --- 1. Form Processing (Manual HTML - Secure & Clean Layout) ---
-// Verifica se dados foram enviados E se a chave de sessão é válida (Exigência Moodle.org)
+// 1. Form Processing (Manual HTML - Secure & Clean Layout).
+// Check if data was submitted and session key is valid (Moodle requirement).
 if (data_submitted() && confirm_sesskey()) {
-    // Limpeza de dados (Exigência Moodle.org)
+    // Data cleaning.
     $newtitle = optional_param('manual_title', '', PARAM_TEXT);
 
     if (!empty($newtitle) && trim($newtitle) !== '') {
@@ -49,18 +54,18 @@ if (data_submitted() && confirm_sesskey()) {
         $record->userid = $USER->id;
         $record->type = 'manual';
         $record->title = $newtitle;
-        $record->status = 0; // Pendente
+        $record->status = 0; // Pending.
         $record->timecreated = time();
         $record->timemodified = time();
 
         $DB->insert_record('block_teacher_checklist', $record);
 
-        // Redireciona para evitar reenvio do formulário (Post-Redirect-Get pattern)
+        // Redirect to avoid form resubmission.
         redirect($PAGE->url, get_string('msg_item_added', 'block_teacher_checklist'));
     }
 }
 
-// --- 2. Data Gathering ---
+// 2. Data Gathering.
 $scanner = new \block_teacher_checklist\scanner($course);
 $isscanactive = $scanner->is_active();
 
@@ -77,7 +82,7 @@ foreach ($manualrecords as $rec) {
         'type' => 'manual',
         'subtype' => '',
         'docid' => 0,
-        'title' => format_string($rec->title), // Usando format_string para segurança
+        'title' => format_string($rec->title), // Using format_string for security.
         'url' => '#',
         'icon' => $OUTPUT->image_url('t/edit'),
         'status' => (int)$rec->status,
@@ -108,7 +113,7 @@ foreach ($allitems as $item) {
 foreach ($pending as $index => &$item) {
     $item['number'] = $index + 1;
 }
-unset($item); // Boa prática ao usar referência (&)
+unset($item); // Good practice when using reference.
 
 foreach ($ignored as $index => &$item) {
     $item['number'] = $index + 1;
@@ -120,30 +125,30 @@ foreach ($done as $index => &$item) {
 }
 unset($item);
 
-// --- 3. Prepare Template Data ---
+// 3. Prepare Template Data.
 $data = [
     'courseid' => $courseid,
-    'action_url' => $PAGE->url->out(false), // Necessário para o formulário manual HTML
-    'sesskey' => sesskey(),                 // OBRIGATÓRIO para segurança do formulário manual
+    'action_url' => $PAGE->url->out(false), // Required for the manual HTML form.
+    'sesskey' => sesskey(), // Mandatory for manual form security.
     'is_scan_active' => $isscanactive,
-    
+
     // Tab Counts.
     'count_pending' => count($pending),
     'count_ignored' => count($ignored),
-    'count_done'    => count($done),
+    'count_done' => count($done),
 
     // Tab Content.
-    'has_pending'   => !empty($pending),
+    'has_pending' => !empty($pending),
     'items_pending' => $pending,
-    
-    'has_ignored'   => !empty($ignored),
+
+    'has_ignored' => !empty($ignored),
     'items_ignored' => $ignored,
-    
-    'has_done'      => !empty($done),
-    'items_done'    => $done,
+
+    'has_done' => !empty($done),
+    'items_done' => $done,
 ];
 
-// --- 4. Render ---
+// 4. Render.
 echo $OUTPUT->header();
 
 echo $renderer->render_from_template('block_teacher_checklist/dashboard', $data);

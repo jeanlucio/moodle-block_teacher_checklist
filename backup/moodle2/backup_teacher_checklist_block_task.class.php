@@ -18,23 +18,51 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/blocks/teacher_checklist/backup/moodle2/backup_teacher_checklist_stepslib.php');
 
+/**
+ * Backup task for the teacher_checklist block.
+ *
+ * @package    block_teacher_checklist
+ * @copyright  2026 Jean Lúcio <jeanlucio@gmail.com>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class backup_teacher_checklist_block_task extends backup_block_task {
-
+    /**
+     * Define the steps involved in this backup task.
+     */
     protected function define_my_steps() {
         $this->add_step(new backup_teacher_checklist_structure_step('teacher_checklist_structure', 'block_teacher_checklist.xml'));
     }
 
+    /**
+     * Define the settings for this backup task.
+     */
     protected function define_my_settings() {
     }
 
+    /**
+     * Encode content links.
+     *
+     * @param string $content The content to encode.
+     * @return string The encoded content.
+     */
     public static function encode_content_links($content) {
         return $content;
     }
 
+    /**
+     * Get the file areas to backup.
+     *
+     * @return array The list of file areas.
+     */
     public function get_fileareas() {
         return [];
     }
 
+    /**
+     * Get the config data encoded attributes.
+     *
+     * @return array The list of attributes.
+     */
     public function get_configdata_encoded_attributes() {
         return [];
     }

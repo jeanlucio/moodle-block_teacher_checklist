@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Define the backup structure steps for the teacher_checklist block.
  *
@@ -24,35 +22,39 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class backup_teacher_checklist_structure_step extends backup_block_structure_step {
+    /**
+     * Define the backup structure.
+     *
+     * @return backup_nested_element
+     */
+    protected function define_structure() {
+        // 1. Define the root element.
+        $checklist = new backup_nested_element('teacher_checklist', ['id'], null);
 
-protected function define_structure() {
-        // 1. Define o elemento raiz
-        $teacher_checklist = new backup_nested_element('teacher_checklist', ['id'], null);
-
-        // 2. Define os itens
+        // 2. Define the items.
         $items = new backup_nested_element('checklist_items');
 
-        // 3. Define os campos do item
+        // 3. Define the item fields.
         $item = new backup_nested_element('checklist_item', ['id'], [
-            'userid', 'type', 'subtype', 'docid', 'title', 'status', 'timecreated', 'timemodified'
+            'userid', 'type', 'subtype', 'docid', 'title', 'status', 'timecreated', 'timemodified',
         ]);
 
-        // 4. Monta a árvore
-        $teacher_checklist->add_child($items);
+        // 4. Build the tree.
+        $checklist->add_child($items);
         $items->add_child($item);
 
-        // 5. Define a fonte de dados COM FILTRO
-        // AQUI ESTÁ O PULO DO GATO: Filtramos apenas onde type = 'manual'
-        // Assim, não levamos o "lixo" automático para o backup.
+        // 5. Define data source WITH FILTER.
+        // KEY POINT: We only filter where type = 'manual'.
+        // Thus, we do not backup the automatic items.
         $item->set_source_table('block_teacher_checklist', [
             'courseid' => backup::VAR_COURSEID,
-            'type'     => backup_helper::is_sqlparam('manual') 
+            'type'     => backup_helper::is_sqlparam('manual'),
         ]);
 
-        // 6. Anota ids de usuário
+        // 6. Annotate user ids.
         $item->annotate_ids('user', 'userid');
 
-        // 7. Retorna a estrutura
-        return $this->prepare_block_structure($teacher_checklist);
+        // 7. Return the structure.
+        return $this->prepare_block_structure($checklist);
     }
 }
