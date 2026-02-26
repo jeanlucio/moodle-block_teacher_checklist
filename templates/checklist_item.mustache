@@ -8,48 +8,32 @@
 
     Moodle is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+    along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
     @template block_teacher_checklist/checklist_item
 
     Displays a single checklist item row.
 
-    Classes required for JS:
-    * item-checkbox
-    * actions
-
-    Data attributes required for JS:
-    * data-region
-    * data-id
-    * data-type
-    * data-subtype
-    * data-docid
-    * data-action
-
-    Context variables required for this template:
-    * id
-    * isdone
-    * bulkable
-    * type
-    * subtype
-    * docid
-    * icon
-    * url
-    * title
-    * severity_high
-    * courseid
-    * can_mark_done
-    * can_restore
-    * can_ignore
-
-    @package    block_teacher_checklist
-    @copyright  2026 Jean Lúcio <jeanlucio@gmail.com>
-    @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+    Example context (json):
+    {
+        "id": 1,
+        "isdone": false,
+        "bulkable": true,
+        "number": 1,
+        "icon": "https://raw.githubusercontent.com/moodle/moodle/master/pix/i/course.svg",
+        "title": "Configurar fórum de notícias",
+        "url": "#",
+        "severity_high": true,
+        "can_mark_done": true,
+        "can_restore": false,
+        "can_ignore": true,
+        "courseid": 2
+    }
 }}
 <li class="list-group-item d-flex justify-content-between align-items-center {{#isdone}}bg-light{{/isdone}}" 
     data-region="checklist-item" 
@@ -67,11 +51,10 @@
         {{/bulkable}}
 
         <div class="d-flex align-items-center">
-            
             {{#number}}
                 <span class="text-dark me-2 fw-bold">{{number}}.</span>
             {{/number}}
-            <img src="{{{icon}}}" class="icon me-2" alt="" role="presentation" />
+            <img src="{{{icon}}}" class="icon me-2" alt="">
             
             <div class="item-details">
                 {{#url}}
