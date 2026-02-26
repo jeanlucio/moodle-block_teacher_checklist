@@ -1,4 +1,4 @@
-name: Plugin CI
+name: Plugin CI (Moodle Full Suite)
 
 on: [push, pull_request]
 
@@ -6,7 +6,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     
-    # Esta variável protege todo o ciclo contra incompatibilidades de versão de PHP
+    # Ignora restrições de plataforma para garantir compatibilidade com versões bleeding-edge
     env:
       COMPOSER_IGNORE_PLATFORM_REQS: 1
 
@@ -20,7 +20,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          path: plugin  # Isso isola seu código para não conflitar com a ferramenta de teste
+          path: plugin
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -39,7 +39,6 @@ jobs:
           git clone --depth 1 https://github.com/moodlehq/moodle-plugin-ci.git ~/moodle-plugin-ci
           cd ~/moodle-plugin-ci
           composer install --no-dev --no-interaction --ignore-platform-reqs
-          # Adicionamos a pasta /bin E a /vendor/bin no mapa do robô
           echo "$HOME/moodle-plugin-ci/bin" >> $GITHUB_PATH
           echo "$HOME/moodle-plugin-ci/vendor/bin" >> $GITHUB_PATH
 
@@ -47,8 +46,26 @@ jobs:
         run: |
           moodle-plugin-ci install --plugin ./plugin --moodle ${{ matrix.moodle-branch }} --branch ${{ github.ref_name }} --db-type mysqli --db-user root --db-pass root
 
-      - name: Run PHPCS
+      - name: PHP Syntax Check (PHPLint)
+        run: moodle-plugin-ci phplint
+
+      - name: Validate Plugin (version.php, db/install.xml, etc.)
+        run: moodle-plugin-ci validate
+
+      - name: Run PHPCS (Code Style)
         run: moodle-plugin-ci phpcs -vvv
 
-      - name: Run PHPUnit
+      - name: Check Mustache Templates
+        run: moodle-plugin-ci mustache
+
+      # Ajuste necessário para as regras de CSS do Moodle 5.x
+      - name: Install Missing Stylelint Config
+        run: |
+          cd ${{ matrix.moodle-branch }}
+          npm install stylelint-config-standard --no-save
+
+      - name: Run JS/CSS Lint (Grunt)
+        run: moodle-plugin-ci grunt
+
+      - name: Run PHPUnit (Logic Tests)
         run: moodle-plugin-ci phpunit
