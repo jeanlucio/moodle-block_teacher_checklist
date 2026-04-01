@@ -28,8 +28,9 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, Aja
             /**
              * Sends update requests to the server.
              * @param {Array} itemsData Array of item objects.
+             * @param {Function} onSuccess Callback executed on success.
              */
-            function processUpdates(itemsData) {
+            function processUpdates(itemsData, onSuccess) {
                 var calls = itemsData.map(function(data) {
                     return {
                         methodname: 'block_teacher_checklist_toggle_item_status',
@@ -38,15 +39,32 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, Aja
                 });
 
                 Ajax.call(calls)[calls.length - 1].done(function() {
-                    window.location.reload();
-                }).fail(Notification.exception);
+                    if (typeof onSuccess === 'function') {
+                        onSuccess();
+                    }
+                }).fail(function(ex) {
+                    Notification.exception(ex);
+                });
+            }
+
+            /**
+             * Removes a checklist item element from the list with a fade animation.
+             * @param {jQuery} el The item element ([data-region="checklist-item"]).
+             */
+            function removeItem(el) {
+                el.fadeOut(300, function() {
+                    $(this).remove();
+                });
             }
 
             // 1. INDIVIDUAL TOGGLE BUTTONS (Done, Ignore, Restore).
-            // We use delegated events on document or a main container for dynamic content support.
+            // Delegated event on body to support dynamically rendered content.
             $('body').on('click', '[data-action="toggle-status"]', function(e) {
                 e.preventDefault();
                 var btn = $(this);
+                btn.prop('disabled', true);
+
+                var item = btn.closest('[data-region="checklist-item"]');
 
                 processUpdates([{
                     courseid: btn.data('courseid'),
@@ -54,7 +72,9 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, Aja
                     subtype: btn.data('subtype'),
                     docid: btn.data('docid'),
                     status: btn.data('status')
-                }]);
+                }], function() {
+                    removeItem(item);
+                });
             });
 
             // 2. "SELECT ALL" LOGIC.
@@ -66,8 +86,9 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, Aja
             });
 
             // 3. BULK ACTIONS VISIBILITY.
-            $('.item-checkbox').on('change', function() {
-                var container = $(this).closest('.tab-pane'); // Find parent tab pane.
+            // Delegated on body to handle dynamically added checkboxes.
+            $('body').on('change', '.item-checkbox', function() {
+                var container = $(this).closest('.tab-pane');
                 var totalChecked = container.find('.item-checkbox:checked').length;
                 var bulkContainer = container.find('.bulk-actions-container');
 
@@ -75,7 +96,6 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, Aja
                     bulkContainer.fadeIn(200);
                 } else {
                     bulkContainer.fadeOut(200);
-                    // Uncheck main toggle if no items are checked.
                     container.find('.select-all-toggle').prop('checked', false);
                 }
             });
@@ -87,17 +107,11 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, Aja
                 var newStatus = btn.data('action');
                 var courseId = btn.data('courseid');
                 var container = btn.closest('.tab-pane');
+                var checkedBoxes = container.find('.item-checkbox:checked');
                 var requests = [];
 
-                container.find('.item-checkbox:checked').each(function() {
+                checkedBoxes.each(function() {
                     var chk = $(this);
-
-                    // Prevent marking "auto" items as "done" (status 1) via bulk action if needed,
-                    // but logic permits it if displayed. Assuming auto items CANNOT be manually marked done
-                    // unless they are removed from the list automatically.
-                    // Logic check: Auto items usually disappear when done in Moodle.
-                    // If the checkbox is there, we assume it's actionable.
-
                     requests.push({
                         courseid: courseId,
                         type: chk.data('type'),
@@ -108,7 +122,21 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, Aja
                 });
 
                 if (requests.length > 0) {
-                    processUpdates(requests);
+                    btn.prop('disabled', true);
+
+                    // Collect item elements before the async call.
+                    var itemElements = checkedBoxes.map(function() {
+                        return $(this).closest('[data-region="checklist-item"]')[0];
+                    }).get();
+
+                    processUpdates(requests, function() {
+                        $.each(itemElements, function(i, el) {
+                            removeItem($(el));
+                        });
+                        container.find('.bulk-actions-container').fadeOut(200);
+                        container.find('.select-all-toggle').prop('checked', false);
+                        btn.prop('disabled', false);
+                    });
                 } else {
                     Str.get_strings([
                         {key: 'notice', component: 'moodle'},
@@ -120,6 +148,8 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, Aja
             });
 
             // 5. AUTO SCAN TOGGLE SWITCH.
+            // Requires a full page reload since enabling/disabling the scanner changes
+            // the entire list of displayed items.
             $('.toggle-scan-switch').on('change', function() {
                 var isChecked = $(this).is(':checked');
                 var courseId = $(this).data('courseid');
@@ -130,7 +160,9 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, Aja
                     subtype:  'scan_enabled',
                     docid:    0,
                     status:   isChecked ? 1 : 0
-                }]);
+                }], function() {
+                    window.location.reload();
+                });
             });
         }
     };

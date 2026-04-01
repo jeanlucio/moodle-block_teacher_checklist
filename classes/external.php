@@ -74,12 +74,17 @@ class external extends external_api {
             'status'   => $status,
         ]);
 
-        // 2. Security Check.
+        // 2. Validate status range.
+        if (!in_array($params['status'], [0, 1, 2], true)) {
+            throw new \invalid_parameter_exception('Invalid status value. Must be 0 (Pending), 1 (Done) or 2 (Ignored).');
+        }
+
+        // 3. Security Check.
         $context = context_course::instance($params['courseid']);
         self::validate_context($context);
         require_capability('moodle/course:update', $context);
 
-        // 3. Update Logic.
+        // 4. Update Logic.
 
         // CASE 1: MANUAL ITEM
         // For manual items, 'docid' passed from JS acts as the record 'id'.

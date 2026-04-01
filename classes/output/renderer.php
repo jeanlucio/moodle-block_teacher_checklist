@@ -84,7 +84,7 @@ class renderer extends plugin_renderer_base {
 
         // Prepare context.
         $context = [
-            'id' => $issue['id'] ?? uniqid(),
+            'id' => $issue['id'] ?? random_string(10),
             'isdone' => ($mode === 'done'),
             'bulkable' => $bulkable,
             'type' => $issue['type'],

@@ -28,6 +28,12 @@ use context_course;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class scanner {
+    /**
+     * Virtual document ID for the gradebook check (no specific grade item instance).
+     * Uses a negative value to avoid any collision with real database record IDs.
+     */
+    const GRADEBOOK_VIRTUAL_DOCID = -1;
+
     /** @var stdClass The course object. */
     protected $course;
 
@@ -143,10 +149,10 @@ class scanner {
         $count = $DB->count_records_select('grade_items', 'courseid = ? AND itemtype = ?', [$this->course->id, 'mod']);
 
         if ($count == 0) {
-            $status = $this->get_status('course', 999); // 999 as a virtual ID for gradebook.
+            $status = $this->get_status('gradebook', self::GRADEBOOK_VIRTUAL_DOCID);
             $issues[] = $this->make_issue(
-                'course',
-                999,
+                'gradebook',
+                self::GRADEBOOK_VIRTUAL_DOCID,
                 get_string('issue_no_evaluations', 'block_teacher_checklist'),
                 new moodle_url('/grade/edit/tree/index.php', ['id' => $this->course->id]),
                 'i/grades',

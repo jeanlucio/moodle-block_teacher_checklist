@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Spanish strings for the teacher_checklist block.
+ * English strings for the teacher_checklist block.
  *
  * @package    block_teacher_checklist
  * @copyright  2026 Jean Lúcio <jeanlucio@gmail.com>
@@ -24,51 +24,51 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['add_btn'] = 'Añadir';
-$string['alert_clean'] = '¡Todo listo! No se encontraron tareas pendientes.';
-$string['alert_none_done'] = 'No hay tareas manuales completadas todavía.';
-$string['alert_none_ignored'] = 'No hay elementos ignorados.';
-$string['andmore'] = 'Y {$a} más...';
-$string['bulk_actions'] = 'Con los seleccionados:';
-$string['bulk_done'] = 'Marcar como Hecho';
-$string['bulk_ignore'] = 'Ignorar';
-$string['bulk_restore'] = 'Restaurar';
-$string['bulk_select_all'] = 'Seleccionar Todo';
-$string['checklist_title'] = 'Lista de Verificación del Profesor';
-$string['help_manual_text'] = 'Utilice este espacio para añadir tareas que el sistema no puede detectar automáticamente. Si el título coincide con una actividad del curso, se creará un enlace.';
-$string['help_manual_title'] = '¿Cómo funcionan los ítems manuales?';
-$string['high'] = 'Alta';
-$string['ignore'] = 'Ignorar';
-$string['issue_assign_grading'] = '{$a} envíos esperando calificación: ';
-$string['issue_assign_nodate'] = 'Tarea sin fecha de entrega: {$a}';
-$string['issue_assign_nodesc'] = 'Tarea sin descripción: {$a}';
-$string['issue_completion_disabled'] = 'Rastreo de finalización desactivado en: {$a}';
-$string['issue_course_hidden'] = 'El curso está oculto para los estudiantes';
-$string['issue_forum_empty'] = 'Foro sin temas de discusión: {$a}';
-$string['issue_forum_nodesc'] = 'Foro sin descripción: {$a}';
-$string['issue_no_evaluations'] = 'El curso no tiene ítems de calificación configurados';
-$string['issue_quiz_empty'] = 'Cuestionario sin preguntas: {$a}';
-$string['issue_quiz_grading'] = '{$a} intentos de cuestionario esperando calificación manual: ';
-$string['issue_quiz_insecure'] = 'Cuestionario sin fecha de cierre ni límite de tiempo: {$a}';
-$string['issue_section_empty'] = 'Tema vacío y visible: {$a}';
-$string['mark_done'] = 'Hecho';
-$string['msg_item_added'] = '¡Tarea añadida con éxito!';
-$string['new_manual_item'] = 'Nueva Tarea Manual';
-$string['no_issues_found'] = '¡Buen trabajo! No se encontraron pendientes.';
-$string['no_items_selected'] = 'No se seleccionaron ítems para esta acción.';
-$string['placeholder_manual'] = 'Ej: Calificar exámenes...';
-$string['pluginname'] = 'Lista de Verificación del Profesor';
-$string['privacy:metadata:status'] = 'El estado del elemento (Pendiente, Hecho o Ignorado).';
-$string['privacy:metadata:tableexplanation'] = 'Almacena elementos de la lista de verificación creados manualmente por profesores o problemas detectados automáticamente con su estado.';
-$string['privacy:metadata:timecreated'] = 'La hora en que se creó el elemento de la lista.';
-$string['privacy:metadata:title'] = 'El contenido del texto o título del elemento de la lista.';
-$string['privacy:metadata:userid'] = 'El usuario que creó o modificó por última vez el elemento de la lista.';
-$string['restore'] = 'Restaurar';
-$string['scan_enabled'] = 'Escaneo Automático';
-$string['scan_enabled_help'] = 'Desactivar para usar solo como lista manual.';
-$string['tab_done'] = 'Mis Tareas Hechas';
-$string['tab_ignored'] = 'Ignorados';
-$string['tab_pending'] = 'Pendientes';
-$string['teacher_checklist:addinstance'] = 'Añadir un nuevo bloque de Lista de Verificación';
-$string['teacher_checklist:myaddinstance'] = 'Añadir un nuevo bloque de Lista de Verificación al Tablero';
-$string['view_full_report'] = 'Ver informe completo';
+$string['add_btn'] = 'Add';
+$string['alert_clean'] = 'All done! No pending tasks found.';
+$string['alert_none_done'] = 'No manual tasks completed yet.';
+$string['alert_none_ignored'] = 'No ignored items.';
+$string['andmore'] = 'And {$a} more...';
+$string['bulk_actions'] = 'With selected:';
+$string['bulk_done'] = 'Mark as Done';
+$string['bulk_ignore'] = 'Ignore';
+$string['bulk_restore'] = 'Restore';
+$string['bulk_select_all'] = 'Select All';
+$string['checklist_title'] = 'Teacher Checklist';
+$string['help_manual_text'] = 'Use this space to add tasks that the system cannot detect automatically. If the title matches a course activity, a link will be created.';
+$string['help_manual_title'] = 'How do manual items work?';
+$string['high'] = 'High';
+$string['ignore'] = 'Ignore';
+$string['issue_assign_grading'] = '{$a} submission(s) awaiting grading: ';
+$string['issue_assign_nodate'] = 'Assignment without due date: {$a}';
+$string['issue_assign_nodesc'] = 'Assignment without description: {$a}';
+$string['issue_completion_disabled'] = 'Completion tracking disabled on: {$a}';
+$string['issue_course_hidden'] = 'The course is hidden from students';
+$string['issue_forum_empty'] = 'Forum with no discussion topics: {$a}';
+$string['issue_forum_nodesc'] = 'Forum without description: {$a}';
+$string['issue_no_evaluations'] = 'The course has no gradebook items configured';
+$string['issue_quiz_empty'] = 'Quiz with no questions: {$a}';
+$string['issue_quiz_grading'] = '{$a} quiz attempt(s) awaiting manual grading: ';
+$string['issue_quiz_insecure'] = 'Quiz without close date or time limit: {$a}';
+$string['issue_section_empty'] = 'Empty visible section: {$a}';
+$string['mark_done'] = 'Done';
+$string['msg_item_added'] = 'Task added successfully!';
+$string['new_manual_item'] = 'New Manual Task';
+$string['no_issues_found'] = 'Great work! No pending issues found.';
+$string['no_items_selected'] = 'No items were selected for this action.';
+$string['placeholder_manual'] = 'E.g.: Grade exams...';
+$string['pluginname'] = 'Teacher Checklist';
+$string['privacy:metadata:status'] = 'The status of the item (Pending, Done or Ignored).';
+$string['privacy:metadata:tableexplanation'] = 'Stores checklist items created manually by teachers or automatically detected issues with their status.';
+$string['privacy:metadata:timecreated'] = 'The time the checklist item was created.';
+$string['privacy:metadata:title'] = 'The text content or title of the checklist item.';
+$string['privacy:metadata:userid'] = 'The user who created or last modified the checklist item.';
+$string['restore'] = 'Restore';
+$string['scan_enabled'] = 'Automatic Scan';
+$string['scan_enabled_help'] = 'Disable to use only as a manual checklist.';
+$string['tab_done'] = 'My Completed Tasks';
+$string['tab_ignored'] = 'Ignored';
+$string['tab_pending'] = 'Pending';
+$string['teacher_checklist:addinstance'] = 'Add a new Teacher Checklist block';
+$string['teacher_checklist:myaddinstance'] = 'Add a new Teacher Checklist block to Dashboard';
+$string['view_full_report'] = 'View full report';
