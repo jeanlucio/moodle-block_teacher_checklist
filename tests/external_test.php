@@ -14,10 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace block_teacher_checklist\tests;
+namespace block_teacher_checklist;
 
 use advanced_testcase;
-use block_teacher_checklist\external;
 
 /**
  * Unit tests for the external API (toggle_item_status).
@@ -53,6 +52,7 @@ final class external_test extends advanced_testcase {
     /**
      * Status values outside [0, 1, 2] must throw invalid_parameter_exception.
      *
+     * @param int $badstatus The invalid status value being tested.
      * @dataProvider invalid_status_provider
      */
     public function test_toggle_throws_on_invalid_status(int $badstatus): void {

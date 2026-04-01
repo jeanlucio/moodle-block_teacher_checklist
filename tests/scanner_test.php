@@ -14,10 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace block_teacher_checklist\tests;
+namespace block_teacher_checklist;
 
 use advanced_testcase;
-use block_teacher_checklist\scanner;
 
 /**
  * Unit tests for the scanner class.
@@ -300,11 +299,13 @@ final class scanner_test extends advanced_testcase {
      * An assignment without a description must produce a 'mod_assign_nodesc' issue.
      */
     public function test_scan_detects_assignment_without_description(): void {
-        $this->getDataGenerator()->create_module('assign', [
+        global $DB;
+
+        $assign = $this->getDataGenerator()->create_module('assign', [
             'course'  => $this->course->id,
             'duedate' => time() + WEEKSECS,
-            'intro'   => '',
         ]);
+        $DB->set_field('assign', 'intro', '', ['id' => $assign->id]);
 
         $scanner = new scanner($this->course);
         $issues = $scanner->get_all_issues();
