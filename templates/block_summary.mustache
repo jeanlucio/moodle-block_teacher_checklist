@@ -19,11 +19,33 @@
 
     Displays the summary content inside the course block.
 
-    Context variables required for this template:
-    * hasissues
-    * issues (array of checklist_item contexts)
-    * moreissues (boolean/object with count)
-    * fullreporturl
+    Example context (json):
+    {
+        "courseid": 2,
+        "is_scan_active": true,
+        "hasissues": true,
+        "issues": [
+            {
+                "id": 1,
+                "isdone": false,
+                "bulkable": false,
+                "number": 1,
+                "icon": "[[pix:i/course]]",
+                "title": "Configure news forum",
+                "url": "#",
+                "severity_high": true,
+                "can_mark_done": true,
+                "can_restore": false,
+                "can_ignore": true,
+                "courseid": 2,
+                "type": "auto",
+                "subtype": "course",
+                "docid": 0
+            }
+        ],
+        "moreissues": {"count": 3},
+        "fullreporturl": "#"
+    }
 
     @package    block_teacher_checklist
     @copyright  2026 Jean Lúcio <jeanlucio@gmail.com>
@@ -41,11 +63,11 @@
     
     <hr class="my-2">
     {{#hasissues}}
-        <ul class="list-group list-group-flush mb-3">
+        <div class="list-group list-group-flush mb-3">
             {{#issues}}
                 {{> block_teacher_checklist/checklist_item }}
             {{/issues}}
-        </ul>
+        </div>
         
         {{#moreissues}}
         <div class="text-center small text-muted fst-italic mb-2">

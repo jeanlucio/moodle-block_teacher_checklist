@@ -19,20 +19,41 @@
 
     Displays the full report page with tabs and manual item form.
 
-    Context variables required for this template:
-    * checklist_title
-    * courseid
-    * is_scan_active
-    * add_item_form (HTML from moodleform)
-    * count_pending
-    * count_ignored
-    * count_done
-    * has_pending
-    * items_pending
-    * has_ignored
-    * items_ignored
-    * has_done
-    * items_done
+    Example context (json):
+    {
+        "checklist_title": "Course Checklist",
+        "courseid": 2,
+        "is_scan_active": true,
+        "action_url": "#",
+        "sesskey": "abc123",
+        "count_pending": 1,
+        "count_ignored": 0,
+        "count_done": 0,
+        "has_pending": true,
+        "items_pending": [
+            {
+                "id": 1,
+                "isdone": false,
+                "bulkable": true,
+                "number": 1,
+                "icon": "[[pix:i/course]]",
+                "title": "Configure news forum",
+                "url": "#",
+                "severity_high": false,
+                "can_mark_done": true,
+                "can_restore": false,
+                "can_ignore": true,
+                "courseid": 2,
+                "type": "auto",
+                "subtype": "course",
+                "docid": 0
+            }
+        ],
+        "has_ignored": false,
+        "items_ignored": [],
+        "has_done": false,
+        "items_done": []
+    }
 
     @package    block_teacher_checklist
     @copyright  2026 Jean Lúcio <jeanlucio@gmail.com>
@@ -130,11 +151,11 @@
                         </button>
                     </div>
                 </div>
-                <ul class="list-group block_teacher_checklist" id="list-pending">
+                <div class="list-group block_teacher_checklist" id="list-pending">
                     {{#items_pending}}
                         {{> block_teacher_checklist/checklist_item }}
                     {{/items_pending}}
-                </ul>
+                </div>
             {{/has_pending}}
             {{^has_pending}}
                 <div class="alert alert-success text-center mt-3">
@@ -157,11 +178,11 @@
                         </button>
                     </div>
                 </div>
-                <ul class="list-group block_teacher_checklist" id="list-ignored">
+                <div class="list-group block_teacher_checklist" id="list-ignored">
                     {{#items_ignored}}
                         {{> block_teacher_checklist/checklist_item }}
                     {{/items_ignored}}
-                </ul>
+                </div>
             {{/has_ignored}}
             {{^has_ignored}}
                 <div class="alert alert-info text-center mt-3">{{#str}} alert_none_ignored, block_teacher_checklist {{/str}}</div>
@@ -182,11 +203,11 @@
                         </button>
                     </div>
                 </div>
-                <ul class="list-group block_teacher_checklist" id="list-done">
-                     {{#items_done}}
+                <div class="list-group block_teacher_checklist" id="list-done">
+                    {{#items_done}}
                         {{> block_teacher_checklist/checklist_item }}
                     {{/items_done}}
-                </ul>
+                </div>
             {{/has_done}}
             {{^has_done}}
                 <div class="alert alert-info text-center mt-3">{{#str}} alert_none_done, block_teacher_checklist {{/str}}</div>
