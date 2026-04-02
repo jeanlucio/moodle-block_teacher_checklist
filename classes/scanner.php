@@ -187,7 +187,7 @@ class scanner {
 
         foreach ($assigns as $assign) {
             $cm = $this->get_cm_by_instance('assign', $assign->id);
-            if (!$cm || !$cm->uservisible) {
+            if (!$cm || !$cm->visible) {
                 continue;
             }
 
@@ -256,7 +256,7 @@ class scanner {
 
         foreach ($forums as $forum) {
             $cm = $this->get_cm_by_instance('forum', $forum->id);
-            if (!$cm || !$cm->uservisible) {
+            if (!$cm || !$cm->visible) {
                 continue;
             }
 
@@ -293,7 +293,7 @@ class scanner {
 
         foreach ($quizzes as $quiz) {
             $cm = $this->get_cm_by_instance('quiz', $quiz->id);
-            if (!$cm || !$cm->uservisible) {
+            if (!$cm || !$cm->visible) {
                 continue;
             }
 
@@ -348,7 +348,7 @@ class scanner {
         foreach ($quizzes as $quiz) {
             if ($quiz->pending_count > 0) {
                 $cm = $this->get_cm_by_instance('quiz', $quiz->id);
-                if (!$cm || !$cm->uservisible) {
+                if (!$cm || !$cm->visible) {
                     continue;
                 }
 
@@ -378,7 +378,7 @@ class scanner {
     protected function scan_completion_disabled(): array {
         $issues = [];
         foreach ($this->modinfo->cms as $cm) {
-            if ($cm->modname == 'label' || !$cm->uservisible) {
+            if ($cm->modname == 'label' || !$cm->visible) {
                 continue;
             }
 
