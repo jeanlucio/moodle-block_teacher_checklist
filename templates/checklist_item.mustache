@@ -25,8 +25,11 @@
         "isdone": false,
         "bulkable": true,
         "number": 1,
+        "type": "auto",
+        "subtype": "course",
+        "docid": 0,
         "icon": "https://raw.githubusercontent.com/moodle/moodle/master/pix/i/course.svg",
-        "title": "Configurar fórum de notícias",
+        "title": "Configure course settings",
         "url": "#",
         "severity_high": true,
         "can_mark_done": true,
@@ -74,44 +77,44 @@
     </div>
 
     <div class="actions text-end text-nowrap ms-2">
-        {{! Done Button - Only for pending manual items }}
         {{#can_mark_done}}
-        <button class="btn btn-sm btn-outline-success me-1" 
-                data-action="toggle-status" 
-                data-courseid="{{courseid}}" 
-                data-type="{{type}}" 
-                data-subtype="{{subtype}}" 
-                data-docid="{{docid}}" 
-                data-status="1" 
-                title="{{#str}} mark_done, block_teacher_checklist {{/str}}">
+        <button class="btn btn-sm btn-outline-success me-1"
+                data-action="toggle-status"
+                data-courseid="{{courseid}}"
+                data-type="{{type}}"
+                data-subtype="{{subtype}}"
+                data-docid="{{docid}}"
+                data-status="1"
+                title="{{#str}} mark_done, block_teacher_checklist {{/str}}"
+                aria-label="{{#str}} mark_done, block_teacher_checklist {{/str}}">
             <i class="fa fa-check" aria-hidden="true"></i>
         </button>
         {{/can_mark_done}}
 
-        {{! Restore Button - For done or ignored items }}
         {{#can_restore}}
-        <button class="btn btn-sm btn-outline-secondary me-1" 
-                data-action="toggle-status" 
-                data-courseid="{{courseid}}" 
-                data-type="{{type}}" 
-                data-subtype="{{subtype}}" 
-                data-docid="{{docid}}" 
-                data-status="0" 
-                title="{{#str}} restore, block_teacher_checklist {{/str}}">
+        <button class="btn btn-sm btn-outline-secondary me-1"
+                data-action="toggle-status"
+                data-courseid="{{courseid}}"
+                data-type="{{type}}"
+                data-subtype="{{subtype}}"
+                data-docid="{{docid}}"
+                data-status="0"
+                title="{{#str}} restore, block_teacher_checklist {{/str}}"
+                aria-label="{{#str}} restore, block_teacher_checklist {{/str}}">
             <i class="fa fa-undo" aria-hidden="true"></i>
         </button>
         {{/can_restore}}
 
-        {{! Ignore Button - For pending items }}
         {{#can_ignore}}
-        <button class="btn btn-sm btn-outline-danger" 
-                data-action="toggle-status" 
-                data-courseid="{{courseid}}" 
-                data-type="{{type}}" 
-                data-subtype="{{subtype}}" 
-                data-docid="{{docid}}" 
-                data-status="2" 
-                title="{{#str}} ignore, block_teacher_checklist {{/str}}">
+        <button class="btn btn-sm btn-outline-danger"
+                data-action="toggle-status"
+                data-courseid="{{courseid}}"
+                data-type="{{type}}"
+                data-subtype="{{subtype}}"
+                data-docid="{{docid}}"
+                data-status="2"
+                title="{{#str}} ignore, block_teacher_checklist {{/str}}"
+                aria-label="{{#str}} ignore, block_teacher_checklist {{/str}}">
             <i class="fa fa-times" aria-hidden="true"></i>
         </button>
         {{/can_ignore}}

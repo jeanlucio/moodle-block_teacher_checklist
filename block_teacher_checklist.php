@@ -35,7 +35,7 @@ class block_teacher_checklist extends block_base {
      * @return stdClass
      */
     public function get_content() {
-        global $COURSE, $DB, $OUTPUT; // Added $DB and $OUTPUT.
+        global $COURSE, $DB, $OUTPUT;
         if ($this->content !== null) {
             return $this->content;
         }

@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once('../../config.php');
+require(__DIR__ . '/../../config.php');
 
 $courseid = required_param('id', PARAM_INT);
 $course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
@@ -127,6 +127,7 @@ unset($item);
 
 // 3. Prepare Template Data.
 $data = [
+    'checklist_title' => get_string('checklist_title', 'block_teacher_checklist'),
     'courseid' => $courseid,
     'action_url' => $PAGE->url->out(false), // Required for the manual HTML form.
     'sesskey' => sesskey(), // Mandatory for manual form security.
