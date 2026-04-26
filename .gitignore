@@ -10,3 +10,7 @@ Thumbs.db
 # IDEs
 .vscode/
 .idea/
+
+# Local dev tools
+.phpcs.xml
+.claude/
