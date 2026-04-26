@@ -30,10 +30,12 @@
 | Check | What it detects |
 |-------|----------------|
 | Course visibility | Course is hidden from students |
+| Course summary | Course has no summary or description |
+| Course end date | Course has no end date configured |
 | Gradebook | No grade items configured |
 | Assignments | Missing due date, missing description, pending submissions |
 | Quizzes | No questions, no time limit or close date, attempts awaiting manual grading |
-| Forums | Forums with no discussion topics (Announcements forum excluded) |
+| Forums | No discussion topics; no description (Announcements forum excluded) |
 | Completion tracking | Visible activities with completion tracking disabled |
 | Empty sections | Visible course sections with no content |
 
@@ -128,10 +130,12 @@ O **Teacher Checklist** é um bloco para Moodle que ajuda professores a verifica
 | Verificação | O que detecta |
 |-------------|---------------|
 | Visibilidade do curso | Curso oculto para estudantes |
+| Resumo do curso | Curso sem resumo ou descrição |
+| Data de término | Curso sem data de término configurada |
 | Livro de notas | Nenhum item de avaliação configurado |
 | Tarefas | Sem data de entrega, sem descrição, envios pendentes de correção |
 | Questionários | Sem perguntas, sem limite de tempo ou data de fechamento, tentativas aguardando correção manual |
-| Fóruns | Fóruns sem tópicos de discussão (Fórum de Avisos excluído) |
+| Fóruns | Sem tópicos de discussão; sem descrição (Fórum de Avisos excluído) |
 | Rastreamento de conclusão | Atividades visíveis com rastreamento de conclusão desligado |
 | Tópicos vazios | Seções visíveis do curso sem conteúdo |
 

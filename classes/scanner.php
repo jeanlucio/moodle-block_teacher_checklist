@@ -107,6 +107,7 @@ class scanner {
 
         // Merge results from all scanners.
         $issues = array_merge($issues, $this->scan_course_visibility());
+        $issues = array_merge($issues, $this->scan_course_settings());
         $issues = array_merge($issues, $this->scan_no_evaluations());
         $issues = array_merge($issues, $this->scan_assignments_issues());
         $issues = array_merge($issues, $this->scan_quiz_grading());
@@ -137,6 +138,41 @@ class scanner {
                 'high'
             );
         }
+        return $issues;
+    }
+
+    /**
+     * Check course-level settings: missing summary and missing end date.
+     *
+     * @return array List of issues.
+     */
+    protected function scan_course_settings(): array {
+        $issues = [];
+
+        if (empty(strip_tags($this->course->summary))) {
+            $status = $this->get_status('course_nosummary', 0);
+            $issues[] = $this->make_issue(
+                'course_nosummary',
+                0,
+                get_string('issue_course_nosummary', 'block_teacher_checklist'),
+                new moodle_url('/course/edit.php', ['id' => $this->course->id]),
+                'i/info',
+                $status
+            );
+        }
+
+        if (empty($this->course->enddate)) {
+            $status = $this->get_status('course_noenddate', 0);
+            $issues[] = $this->make_issue(
+                'course_noenddate',
+                0,
+                get_string('issue_course_noenddate', 'block_teacher_checklist'),
+                new moodle_url('/course/edit.php', ['id' => $this->course->id]),
+                'i/calendar',
+                $status
+            );
+        }
+
         return $issues;
     }
 
@@ -273,6 +309,18 @@ class scanner {
                     $forum->id,
                     get_string('issue_forum_empty', 'block_teacher_checklist', $forum->name),
                     new moodle_url('/mod/forum/view.php', ['id' => $cm->id]),
+                    $cm->get_icon_url(),
+                    $status
+                );
+            }
+
+            if (empty(strip_tags($forum->intro))) {
+                $status = $this->get_status('mod_forum_nodesc', $forum->id);
+                $issues[] = $this->make_issue(
+                    'mod_forum_nodesc',
+                    $forum->id,
+                    get_string('issue_forum_nodesc', 'block_teacher_checklist', $forum->name),
+                    new moodle_url('/course/modedit.php', ['update' => $cm->id, 'return' => 1]),
                     $cm->get_icon_url(),
                     $status
                 );

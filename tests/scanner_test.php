@@ -335,6 +335,97 @@ final class scanner_test extends advanced_testcase {
     }
 
     /**
+     * A course without a summary must produce a 'course_nosummary' issue.
+     */
+    public function test_scan_detects_course_without_summary(): void {
+        global $DB;
+        $DB->set_field('course', 'summary', '', ['id' => $this->course->id]);
+        $this->course->summary = '';
+
+        $scanner = new scanner($this->course);
+        $issues = $scanner->get_all_issues();
+
+        $found = array_filter($issues, fn($i) => $i['subtype'] === 'course_nosummary');
+        $this->assertNotEmpty($found, 'Course without summary should be flagged.');
+    }
+
+    /**
+     * A course with a summary must NOT produce a 'course_nosummary' issue.
+     */
+    public function test_scan_does_not_flag_course_with_summary(): void {
+        global $DB;
+        $DB->set_field('course', 'summary', 'A valid course description.', ['id' => $this->course->id]);
+        $this->course->summary = 'A valid course description.';
+
+        $scanner = new scanner($this->course);
+        $issues = $scanner->get_all_issues();
+
+        $found = array_filter($issues, fn($i) => $i['subtype'] === 'course_nosummary');
+        $this->assertEmpty($found, 'Course with summary should not be flagged.');
+    }
+
+    /**
+     * A course without an end date must produce a 'course_noenddate' issue.
+     */
+    public function test_scan_detects_course_without_end_date(): void {
+        global $DB;
+        $DB->set_field('course', 'enddate', 0, ['id' => $this->course->id]);
+        $this->course->enddate = 0;
+
+        $scanner = new scanner($this->course);
+        $issues = $scanner->get_all_issues();
+
+        $found = array_filter($issues, fn($i) => $i['subtype'] === 'course_noenddate');
+        $this->assertNotEmpty($found, 'Course without end date should be flagged.');
+    }
+
+    /**
+     * A course with an end date set must NOT produce a 'course_noenddate' issue.
+     */
+    public function test_scan_does_not_flag_course_with_end_date(): void {
+        global $DB;
+        $DB->set_field('course', 'enddate', time() + YEARSECS, ['id' => $this->course->id]);
+        $this->course->enddate = time() + YEARSECS;
+
+        $scanner = new scanner($this->course);
+        $issues = $scanner->get_all_issues();
+
+        $found = array_filter($issues, fn($i) => $i['subtype'] === 'course_noenddate');
+        $this->assertEmpty($found, 'Course with end date should not be flagged.');
+    }
+
+    /**
+     * A forum without a description must produce a 'mod_forum_nodesc' issue.
+     */
+    public function test_scan_detects_forum_without_description(): void {
+        global $DB;
+        $forum = $this->getDataGenerator()->create_module('forum', ['course' => $this->course->id]);
+        $DB->set_field('forum', 'intro', '', ['id' => $forum->id]);
+
+        $scanner = new scanner($this->course);
+        $issues = $scanner->get_all_issues();
+
+        $found = array_filter($issues, fn($i) => $i['subtype'] === 'mod_forum_nodesc');
+        $this->assertNotEmpty($found, 'Forum without description should be flagged.');
+    }
+
+    /**
+     * A forum with a description must NOT produce a 'mod_forum_nodesc' issue.
+     */
+    public function test_scan_does_not_flag_forum_with_description(): void {
+        $this->getDataGenerator()->create_module('forum', [
+            'course' => $this->course->id,
+            'intro'  => 'Use this forum to discuss weekly topics.',
+        ]);
+
+        $scanner = new scanner($this->course);
+        $issues = $scanner->get_all_issues();
+
+        $found = array_filter($issues, fn($i) => $i['subtype'] === 'mod_forum_nodesc');
+        $this->assertEmpty($found, 'Forum with description should not be flagged.');
+    }
+
+    /**
      * The Announcements (news) forum must never be flagged as empty,
      * even when it has no discussion topics.
      */
