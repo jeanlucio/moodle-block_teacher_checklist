@@ -1,125 +1,204 @@
-# Teacher Checklist Block
+# Teacher Checklist — Moodle Block
 
-![Moodle Badge](https://img.shields.io/badge/Moodle-4.5%2B-orange)
-![License](https://img.shields.io/badge/License-GPLv3-blue)
+[![Moodle Plugin CI](https://github.com/jeanlucio/moodle-block_teacher_checklist/actions/workflows/ci.yml/badge.svg)](https://github.com/jeanlucio/moodle-block_teacher_checklist/actions/workflows/ci.yml)
+![Moodle](https://img.shields.io/badge/Moodle-4.5%2B-orange?style=flat-square&logo=moodle&logoColor=white)
+![License](https://img.shields.io/badge/License-GPLv3-blue?style=flat-square)
+![Status](https://img.shields.io/badge/Status-Stable-green?style=flat-square)
 
-**[English](#english) | [Português](#português) | [Español](#español) | [Français](#français)**
+[English](#english) | [Português](#português)
 
 ---
 
-<a name="english"></a>
-## 🇬🇧 English
+## English
 
-The **Teacher Checklist** is a block for Moodle that helps teachers track the progress of their course setup. It combines automatic issue detection with a manual to-do list.
+**Teacher Checklist** is a Moodle block that helps teachers track the quality of their course setup. It combines automatic issue detection with a manual to-do list so nothing slips through the cracks before students arrive.
+
+---
 
 ### ✨ Features
 
-#### 1. Automatic Scanning (Smart Detection)
-The plugin automatically scans the course and alerts the teacher about:
-* **Course Visibility:** Warns if the course is hidden from students.
-* **Gradebook Empty:** Detects if the course has no grade items configured.
-* **Assignment Issues:** Identifies assignments without due dates, descriptions, or with pending grading.
-* **Quiz Issues:** Flags quizzes without questions, without time limits/close dates, or attempts waiting for manual grading.
-* **Empty Forums:** Detects forums without any discussion topics.
-* **Activity Completion:** Warns about visible activities with completion tracking disabled.
-* **Empty Sections:** Identifies visible course sections that have no content.
+* 🔍 **Automatic Scanning:** Detects common course configuration problems without any manual work.
+* 📋 **Manual Items:** Teachers can add custom tasks that the system cannot detect automatically.
+* 🔗 **Smart Linking:** If a manual task title matches an existing activity name, a clickable link is created automatically.
+* 👁️ **Status Tracking:** Each item can be marked as Done, Ignored, or restored to Pending.
+* ⚡ **Bulk Actions:** Mark or ignore multiple items at once with a single click.
+* 💾 **Backup Safe:** Manual items are preserved during course backup/restore; automatic issues are recalculated dynamically.
+* 🔄 **Toggle Scan:** Automatic scanning can be disabled to use the block as a pure manual checklist.
 
-#### 2. Manual Items
-Teachers can add their own tasks (e.g., "Print exams", "Record welcome video").
-* **Smart Linking:** If the manual task title matches an existing activity name, a link is automatically created.
-* **Safe Backup:** Manual items are preserved during course backup/restore, while automatic issues are recalculated dynamically.
+#### Automatic checks
 
-### 🚀 Installation
-1.  Unzip the content into the `blocks/teacher_checklist` directory of your Moodle.
-2.  Visit the "Notifications" page in Site Administration to trigger the installation.
-3.  Add the block to your course via "Turn editing on" > "Add a block".
-
-### 📋 Requirements
-* Moodle 4.5 or higher.
-* PHP 7.4 or higher.
+| Check | What it detects |
+|-------|----------------|
+| Course visibility | Course is hidden from students |
+| Gradebook | No grade items configured |
+| Assignments | Missing due date, missing description, pending submissions |
+| Quizzes | No questions, no time limit or close date, attempts awaiting manual grading |
+| Forums | Forums with no discussion topics (Announcements forum excluded) |
+| Completion tracking | Visible activities with completion tracking disabled |
+| Empty sections | Visible course sections with no content |
 
 ---
 
-<a name="português"></a>
-## 🇧🇷 Português
+### 🎓 Educational Purpose
 
-O **Teacher Checklist** é um bloco para Moodle que ajuda professores a acompanhar o progresso da configuração de seus cursos. Ele combina detecção automática de problemas com uma lista de tarefas manual.
+Teacher Checklist is designed to:
+
+* Reduce course configuration errors before students access the course
+* Give teachers a single place to track both technical issues and personal reminders
+* Support quality assurance workflows at scale for course coordinators
+* Lower support requests caused by misconfigured courses
+
+Suitable for:
+
+* Individual teachers who want a quality checklist before publishing their course
+* Course coordinators reviewing multiple courses
+* Institutions running Moodle with custom quality standards
+
+---
+
+### 📦 Requirements
+
+| Component | Version |
+|-----------|---------|
+| Moodle    | 4.5+    |
+| PHP       | 8.1+    |
+
+---
+
+### 🛠️ Installation
+
+1. Download or clone this repository into `blocks/teacher_checklist` inside your Moodle root.
+2. Visit **Site administration > Notifications** to run the database upgrade.
+3. Add the **Teacher Checklist** block to any course page via **Turn editing on > Add a block**.
+
+```bash
+git clone git@github.com:jeanlucio/moodle-block_teacher_checklist.git blocks/teacher_checklist
+```
+
+---
+
+### 📖 Usage
+
+1. Add the **Teacher Checklist** block to your course page.
+2. The block immediately shows any pending issues detected automatically.
+3. Click **View full report** to open the dashboard with all tabs: Pending, Ignored, and Done.
+4. Add manual tasks via the text field at the top of the dashboard.
+5. Use the action buttons on each item to mark it as Done, Ignore it, or Restore it to Pending.
+6. Use **Bulk Actions** to update multiple items at once after selecting them with the checkboxes.
+7. Toggle **Automatic Scan** off if you want to use the block only as a manual checklist.
+
+---
+
+### 🔐 Security & Compliance
+
+* Capability-based access control (`block/teacher_checklist:addinstance`)
+* `require_sesskey()` on all state-changing form submissions
+* Moodle External API compliant (AJAX via `core/ajax`)
+* Full Privacy API implementation — data export and deletion supported
+* Backup and restore support for manual items
+
+---
+
+## 📄 License / Licença
+
+This project is licensed under the **GNU General Public License v3 (GPLv3)**.
+
+**Copyright:** 2026 Jean Lúcio
+
+---
+
+## Português
+
+O **Teacher Checklist** é um bloco para Moodle que ajuda professores a verificar a qualidade da configuração de seus cursos. Ele combina detecção automática de problemas com uma lista de tarefas manual para que nada passe despercebido antes que os alunos acessem o curso.
+
+---
 
 ### ✨ Funcionalidades
 
-#### 1. Verificação Automática (Detecção Inteligente)
-O plugin varre automaticamente o curso e alerta o professor sobre:
-* **Visibilidade do Curso:** Avisa se o curso está oculto para alunos.
-* **Livro de Notas:** Detecta se o curso não possui itens de avaliação configurados.
-* **Problemas em Tarefas:** Identifica tarefas sem data de entrega, sem descrição ou com notas pendentes.
-* **Problemas em Questionários:** Sinaliza questionários sem perguntas, sem limite de tempo/data de fechamento ou com tentativas aguardando correção manual.
-* **Fóruns Vazios:** Detecta fóruns sem tópicos de discussão.
-* **Conclusão de Atividade:** Avisa sobre atividades visíveis com o rastreamento de conclusão desligado.
-* **Tópicos Vazios:** Identifica seções visíveis do curso que não possuem conteúdo.
+* 🔍 **Verificação Automática:** Detecta problemas comuns na configuração do curso sem nenhum trabalho manual.
+* 📋 **Itens Manuais:** Professores podem adicionar tarefas que o sistema não consegue detectar automaticamente.
+* 🔗 **Link Inteligente:** Se o título de uma tarefa manual coincidir com o nome de uma atividade existente, um link clicável é criado automaticamente.
+* 👁️ **Rastreamento de Status:** Cada item pode ser marcado como Feito, Ignorado ou restaurado para Pendente.
+* ⚡ **Ações em Lote:** Marque ou ignore vários itens de uma vez com um único clique.
+* 💾 **Backup Seguro:** Itens manuais são preservados no backup/restauração do curso; problemas automáticos são recalculados dinamicamente.
+* 🔄 **Alternar Verificação:** A verificação automática pode ser desativada para usar o bloco apenas como lista manual.
 
-#### 2. Itens Manuais
-Professores podem adicionar suas próprias tarefas (ex: "Imprimir provas", "Gravar vídeo de boas-vindas").
-* **Link Inteligente:** Se o título da tarefa manual for igual ao nome de uma atividade existente, um link é criado automaticamente.
-* **Backup Seguro:** Itens manuais são preservados durante o backup/restauração do curso.
+#### Verificações automáticas
 
-### 🚀 Instalação
-1.  Descompacte o conteúdo no diretório `blocks/teacher_checklist` do seu Moodle.
-2.  Visite a página "Notificações" na Administração do Site para instalar.
-3.  Adicione o bloco ao curso ativando a edição e clicando em "Adicionar um bloco".
-
-### 📋 Requisitos
-* Moodle 4.5 ou superior.
+| Verificação | O que detecta |
+|-------------|---------------|
+| Visibilidade do curso | Curso oculto para estudantes |
+| Livro de notas | Nenhum item de avaliação configurado |
+| Tarefas | Sem data de entrega, sem descrição, envios pendentes de correção |
+| Questionários | Sem perguntas, sem limite de tempo ou data de fechamento, tentativas aguardando correção manual |
+| Fóruns | Fóruns sem tópicos de discussão (Fórum de Avisos excluído) |
+| Rastreamento de conclusão | Atividades visíveis com rastreamento de conclusão desligado |
+| Tópicos vazios | Seções visíveis do curso sem conteúdo |
 
 ---
 
-<a name="español"></a>
-## 🇪🇸 Español
+### 🎓 Finalidade Educacional
 
-El **Teacher Checklist** es un bloque para Moodle que ayuda a los profesores a seguir el progreso de la configuración de sus cursos. Combina la detección automática de problemas con una lista de tareas manual.
+O Teacher Checklist foi projetado para:
 
-### ✨ Características
+* Reduzir erros de configuração antes que os estudantes acessem o curso
+* Oferecer ao professor um único lugar para acompanhar problemas técnicos e lembretes pessoais
+* Apoiar fluxos de garantia de qualidade em escala para coordenadores de curso
+* Diminuir chamados de suporte causados por cursos mal configurados
 
-#### 1. Escaneo Automático
-El plugin escanea automáticamente el curso y alerta sobre:
-* **Visibilidad del Curso:** Advierte si el curso está oculto a los estudiantes.
-* **Libro de Calificaciones:** Detecta si el curso no tiene ítems de calificación configurados.
-* **Problemas con Tareas:** Identifica tareas sin fecha de entrega, descripción o con calificaciones pendientes.
-* **Problemas con Cuestionarios:** Señala cuestionarios sin preguntas, sin límite de tiempo/fecha de cierre o intentos esperando calificación manual.
-* **Foros Vacíos:** Detecta foros sin temas de discusión.
-* **Finalización de Actividad:** Advierte sobre actividades visibles con el rastreo de finalización desactivado.
-* **Secciones Vacías:** Identifica secciones visibles del curso que no tienen contenido.
+Indicado para:
 
-#### 2. Ítems Manuales
-Los profesores pueden añadir sus propias tareas (ej: "Imprimir exámenes").
-* **Enlace Inteligente:** Si el título coincide con una actividad existente, se crea un enlace automáticamente.
-* **Copia de Seguridad Segura:** Los ítems manuales se conservan durante la copia de seguridad/restauración.
-
-### 📋 Requisitos
-* Moodle 4.5 o superior.
+* Professores que desejam uma lista de verificação de qualidade antes de publicar o curso
+* Coordenadores de curso revisando múltiplos cursos
+* Instituições que utilizam o Moodle com padrões de qualidade personalizados
 
 ---
 
-<a name="français"></a>
-## 🇫🇷 Français
+### 📦 Requisitos
 
-**Teacher Checklist** est un bloc pour Moodle qui aide les enseignants à suivre la configuration de leurs cours. Il combine la détection automatique de problèmes avec une liste de tâches manuelle.
+| Componente | Versão  |
+|------------|---------|
+| Moodle     | 4.5+    |
+| PHP        | 8.1+    |
 
-### ✨ Fonctionnalités
+---
 
-#### 1. Analyse Automatique
-Le plugin analyse automatiquement le cours et alerte sur :
-* **Visibilité du Cours :** Avertit si le cours est caché aux étudiants.
-* **Carnet de Notes :** Détecte si le cours n'a pas d'éléments d'évaluation configurés.
-* **Problèmes de Devoirs :** Identifie les devoirs sans date limite, description ou en attente de notation.
-* **Problèmes de Tests :** Signale les tests sans questions, sans limite de temps/date de fermeture ou en attente de notation manuelle.
-* **Forums Vides :** Détecte les forums sans sujets de discussion.
-* **Achèvement d'Activité :** Avertit des activités visibles avec le suivi d'achèvement désactivé.
-* **Sections Vides :** Identifie les sections visibles du cours qui n'ont pas de contenu.
+### 🛠️ Instalação
 
-#### 2. Tâches Manuelles
-Les enseignants peuvent ajouter leurs propres tâches (ex : "Imprimer les examens").
-* **Lien Intelligent :** Si le titre correspond à une activité existante, un lien est créé automatiquement.
-* **Sauvegarde Sécurisée :** Les éléments manuels sont conservés lors de la sauvegarde/restauration.
+1. Baixe o arquivo `.zip` ou clone este repositório na pasta `blocks/teacher_checklist` do seu Moodle.
+2. Acesse **Administração do site > Notificações** para executar a atualização do banco de dados.
+3. Adicione o bloco **Teacher Checklist** a qualquer página de curso via **Ativar edição > Adicionar um bloco**.
 
-### 📋 Prérequis
-* Moodle 4.5 ou supérieur.
+```bash
+git clone git@github.com:jeanlucio/moodle-block_teacher_checklist.git blocks/teacher_checklist
+```
+
+---
+
+### 📖 Como Usar
+
+1. Adicione o bloco **Teacher Checklist** à página do seu curso.
+2. O bloco exibe imediatamente os problemas pendentes detectados automaticamente.
+3. Clique em **Ver relatório completo** para abrir o painel com todas as abas: Pendentes, Ignorados e Feitos.
+4. Adicione tarefas manuais pelo campo de texto no topo do painel.
+5. Use os botões de ação em cada item para marcá-lo como Feito, Ignorá-lo ou Restaurá-lo para Pendente.
+6. Use as **Ações em Lote** para atualizar vários itens de uma vez após selecioná-los com as caixas de seleção.
+7. Desative a **Verificação Automática** se quiser usar o bloco apenas como lista manual.
+
+---
+
+### 🔐 Segurança e Conformidade
+
+* Controle de acesso baseado em capabilities (`block/teacher_checklist:addinstance`)
+* Proteção com `require_sesskey()` em todos os envios de formulário que alteram dados
+* Compatível com a API externa do Moodle (AJAX via `core/ajax`)
+* Implementação completa da Privacy API — exportação e exclusão de dados suportadas
+* Suporte a backup e restauração de itens manuais
+
+---
+
+## 📄 Licença
+
+Este projeto é licenciado sob a **GNU General Public License v3 (GPLv3)**.
+
+**Copyright:** 2026 Jean Lúcio
