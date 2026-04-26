@@ -1,4 +1,4 @@
-name: Plugin CI (Moodle Full Suite)
+name: Moodle Plugin CI
 
 on: [push, pull_request]
 
@@ -20,9 +20,9 @@ jobs:
         image: mariadb:10.11
         env:
           MYSQL_USER: 'root'
-          MYSQL_ALLOW_EMPTY_PASSWORD: "true"
-          MYSQL_CHARACTER_SET_SERVER: "utf8mb4"
-          MYSQL_COLLATION_SERVER: "utf8mb4_unicode_ci"
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
+          MYSQL_CHARACTER_SET_SERVER: 'utf8mb4'
+          MYSQL_COLLATION_SERVER: 'utf8mb4_unicode_ci'
         ports:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval 10s --health-timeout 5s --health-retries 3
@@ -31,11 +31,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Checks estáticos (runchecks: 'all') rodam APENAS na versão mais estável e retrocompatível
+          # Static checks (runchecks: 'all') run only on the oldest supported version.
           - {moodle-branch: 'MOODLE_405_STABLE', php: '8.2', database: 'pgsql', runchecks: 'all'}
           - {moodle-branch: 'MOODLE_405_STABLE', php: '8.2', database: 'mariadb'}
 
-          # Para versões mais novas, apenas testes funcionais (PHPUnit e Behat)
+          # Newer branches: functional tests only (PHPUnit + Behat).
           - {moodle-branch: 'MOODLE_500_STABLE', php: '8.2', database: 'pgsql'}
           - {moodle-branch: 'MOODLE_500_STABLE', php: '8.2', database: 'mariadb'}
 
@@ -111,7 +111,6 @@ jobs:
         run: moodle-plugin-ci phpunit --fail-on-warning
 
       - name: Behat tests
-        id: behat
         if: ${{ !cancelled() }}
         run: moodle-plugin-ci behat --profile chrome --scss-deprecations
 
