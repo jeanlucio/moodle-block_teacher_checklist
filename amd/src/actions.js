@@ -17,7 +17,7 @@
  * Javascript actions for the teacher checklist block.
  *
  * @module      block_teacher_checklist/actions
- * @copyright   2026 Jean Lúcio <jeanlucio@gmail.com>
+ * @copyright   2026 Jean Lúcio
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, Ajax, Notification, Str) {

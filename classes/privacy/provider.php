@@ -29,7 +29,7 @@ use core_privacy\local\request\approved_userlist;
  * Privacy provider implementation for block_teacher_checklist.
  *
  * @package    block_teacher_checklist
- * @copyright  2026 Jean Lúcio <jeanlucio@gmail.com>
+ * @copyright  2026 Jean Lúcio
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class provider implements

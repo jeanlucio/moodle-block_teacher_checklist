@@ -24,7 +24,7 @@ use context_course;
  * Scanner class to detect issues in the course.
  *
  * @package    block_teacher_checklist
- * @copyright  2026 Jean Lúcio <jeanlucio@gmail.com>
+ * @copyright  2026 Jean Lúcio
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class scanner {

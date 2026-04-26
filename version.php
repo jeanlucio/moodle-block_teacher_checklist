@@ -18,14 +18,14 @@
  * Version details for the teacher_checklist block.
  *
  * @package    block_teacher_checklist
- * @copyright  2026 Jean Lúcio <jeanlucio@gmail.com>
+ * @copyright  2026 Jean Lúcio
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'block_teacher_checklist';
-$plugin->version   = 2026013101;
+$plugin->version   = 2026042600;
 $plugin->requires  = 2024100700; // Requires Moodle 4.5 or later.
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '1.0.0';
+$plugin->release   = 'v1.0.0';

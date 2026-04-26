@@ -18,7 +18,7 @@
  * Teacher Checklist Block.
  *
  * @package    block_teacher_checklist
- * @copyright  2026 Jean Lúcio <jeanlucio@gmail.com>
+ * @copyright  2026 Jean Lúcio
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class block_teacher_checklist extends block_base {

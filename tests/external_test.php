@@ -22,7 +22,7 @@ use advanced_testcase;
  * Unit tests for the external API (toggle_item_status).
  *
  * @package    block_teacher_checklist
- * @copyright  2026 Jean Lúcio <jeanlucio@gmail.com>
+ * @copyright  2026 Jean Lúcio
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers     \block_teacher_checklist\external::toggle_item_status
  */
