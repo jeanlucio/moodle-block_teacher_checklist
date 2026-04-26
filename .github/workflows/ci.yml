@@ -31,19 +31,19 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Static checks (runchecks: 'all') run only on the oldest supported version.
-          - {moodle-branch: 'MOODLE_405_STABLE', php: '8.2', database: 'pgsql', runchecks: 'all'}
-          - {moodle-branch: 'MOODLE_405_STABLE', php: '8.2', database: 'mariadb'}
+          # Static checks (runchecks: 'all') run on the most recent stable version.
+          - {moodle-branch: 'MOODLE_502_STABLE', php: '8.3', database: 'pgsql', runchecks: 'all'}
+          - {moodle-branch: 'MOODLE_502_STABLE', php: '8.3', database: 'mariadb'}
 
-          # Newer branches: functional tests only (PHPUnit + Behat).
-          - {moodle-branch: 'MOODLE_500_STABLE', php: '8.2', database: 'pgsql'}
-          - {moodle-branch: 'MOODLE_500_STABLE', php: '8.2', database: 'mariadb'}
-
+          # Older stable branches: functional tests only (PHPUnit + Behat).
           - {moodle-branch: 'MOODLE_501_STABLE', php: '8.3', database: 'pgsql'}
           - {moodle-branch: 'MOODLE_501_STABLE', php: '8.3', database: 'mariadb'}
 
-          - {moodle-branch: 'main', php: '8.3', database: 'pgsql'}
-          - {moodle-branch: 'main', php: '8.3', database: 'mariadb'}
+          - {moodle-branch: 'MOODLE_500_STABLE', php: '8.2', database: 'pgsql'}
+          - {moodle-branch: 'MOODLE_500_STABLE', php: '8.2', database: 'mariadb'}
+
+          - {moodle-branch: 'MOODLE_405_STABLE', php: '8.2', database: 'pgsql'}
+          - {moodle-branch: 'MOODLE_405_STABLE', php: '8.2', database: 'mariadb'}
 
     steps:
       - name: Check out repository code
