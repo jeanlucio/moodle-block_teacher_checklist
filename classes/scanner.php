@@ -43,6 +43,9 @@ class scanner {
     /** @var array List of ignored items indexed by unique key. */
     protected $ignoreditems;
 
+    /** @var array|null Lazy cache of course module IDs for news-type forums. */
+    protected $newsforumcmids = null;
+
     /**
      * Constructor.
      *
@@ -247,7 +250,7 @@ class scanner {
         global $DB;
         $issues = [];
 
-        $sql = "SELECT f.id, f.name, f.intro,
+        $sql = "SELECT f.id, f.name, f.intro, f.type,
                        (SELECT COUNT(fd.id) FROM {forum_discussions} fd WHERE fd.forum = f.id) as post_count
                 FROM {forum} f
                 WHERE f.course = ?";
@@ -255,6 +258,9 @@ class scanner {
         $forums = $DB->get_records_sql($sql, [$this->course->id]);
 
         foreach ($forums as $forum) {
+            if ($forum->type === 'news') {
+                continue;
+            }
             $cm = $this->get_cm_by_instance('forum', $forum->id);
             if (!$cm || !$cm->visible) {
                 continue;
@@ -371,14 +377,43 @@ class scanner {
     }
 
     /**
-     * Check for activities with completion disabled (where it might be expected).
+     * Return a set of course-module IDs that belong to news-type (Announcements) forums.
+     *
+     * Result is computed once and cached for the lifetime of the scanner instance.
+     *
+     * @return array Keys are cmids (int), values are true.
+     */
+    protected function get_news_forum_cmids(): array {
+        if ($this->newsforumcmids !== null) {
+            return $this->newsforumcmids;
+        }
+        global $DB;
+        $sql = "SELECT cm.id
+                  FROM {course_modules} cm
+                  JOIN {modules} m ON m.id = cm.module AND m.name = 'forum'
+                  JOIN {forum} f ON f.id = cm.instance AND f.type = 'news'
+                 WHERE cm.course = ?";
+        $records = $DB->get_records_sql($sql, [$this->course->id]);
+        $this->newsforumcmids = array_fill_keys(array_keys($records), true);
+        return $this->newsforumcmids;
+    }
+
+    /**
+     * Check for activities with completion tracking disabled.
+     *
+     * The Announcements (news) forum is excluded because it ships without
+     * completion tracking by design and cannot be meaningfully configured.
      *
      * @return array List of issues.
      */
     protected function scan_completion_disabled(): array {
         $issues = [];
+        $newsforumcmids = $this->get_news_forum_cmids();
         foreach ($this->modinfo->cms as $cm) {
             if ($cm->modname == 'label' || !$cm->visible) {
+                continue;
+            }
+            if (isset($newsforumcmids[$cm->id])) {
                 continue;
             }
 

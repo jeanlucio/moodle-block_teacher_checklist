@@ -333,4 +333,41 @@ final class scanner_test extends advanced_testcase {
         ]));
         $this->assertEmpty($configissues, 'Well-configured assignment should not produce configuration issues.');
     }
+
+    /**
+     * The Announcements (news) forum must never be flagged as empty,
+     * even when it has no discussion topics.
+     */
+    public function test_scan_forum_does_not_flag_news_forum_as_empty(): void {
+        $this->getDataGenerator()->create_module('forum', [
+            'course' => $this->course->id,
+            'type'   => 'news',
+        ]);
+
+        $scanner = new scanner($this->course);
+        $issues = $scanner->get_all_issues();
+
+        $forumissues = array_filter($issues, fn($i) => $i['subtype'] === 'mod_forum_empty');
+        $this->assertEmpty($forumissues, 'News/Announcements forum must not be flagged as empty.');
+    }
+
+    /**
+     * The Announcements (news) forum must never be flagged for missing completion tracking.
+     */
+    public function test_scan_completion_disabled_does_not_flag_news_forum(): void {
+        $this->getDataGenerator()->create_module('forum', [
+            'course'     => $this->course->id,
+            'type'       => 'news',
+            'completion' => COMPLETION_TRACKING_NONE,
+        ]);
+
+        $scanner = new scanner($this->course);
+        $issues = $scanner->get_all_issues();
+
+        $compissues = array_filter($issues, fn($i) => $i['subtype'] === 'completion_disabled');
+        $this->assertEmpty(
+            $compissues,
+            'News/Announcements forum must not be flagged for disabled completion tracking.'
+        );
+    }
 }
