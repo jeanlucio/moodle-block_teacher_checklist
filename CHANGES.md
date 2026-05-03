@@ -4,6 +4,49 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v1.1.0] — 2026-05-03
+
+### Fixed
+
+- **Bootstrap 4 / Moodle 4.5 compatibility** — toggle switch and bulk
+  checkboxes now use `position-static m-0` to neutralise Bootstrap 4's
+  `position: absolute` on `.form-check-input`, preventing them from
+  overlapping adjacent text.
+- **Tabs not switching in Moodle 4.5** — added `data-toggle` / `data-target`
+  alongside `data-bs-toggle` / `data-bs-target` on all tab buttons and the
+  collapse link so Bootstrap 4 and Bootstrap 5 both respond correctly.
+- **Completion tracking false positives** — `scan_completion_disabled()` now
+  returns no issues when the course has `enablecompletion = 0`; the teacher
+  cannot configure per-activity completion in that case.
+- **Bulk "Marcar como Feito" acting on auto items** — the action is now
+  filtered to manual items only (`data-markable`); auto items are not sent
+  to the server and are not removed from the screen.
+- **Badge text colour** — explicit `text-white` on `bg-danger`/`bg-success`
+  and `text-dark` on `bg-secondary` ensure correct contrast in both Bootstrap
+  versions.
+
+### Improved
+
+- **Real-time tab updates** — checklist items now move instantly to the
+  correct tab (Pending / Done / Ignored) after any action without requiring
+  a page reload. Action buttons, `bg-light` styling, badge counts, and
+  empty-state messages are all updated in-place.
+- **Bulk action counts** — each bulk button now shows the number of items
+  it will affect in parentheses, e.g. "Marcar como Feito (1) / Ignorar (3)".
+  The "Marcar como Feito" button is hidden when no markable item is selected.
+- **Plugin name (pt_BR)** — renamed from "Lista de Verificação do Professor"
+  to "Checklist do Professor" for natural Brazilian usage.
+
+### Tests
+
+- `test_scan_completion_disabled_does_not_flag_news_forum` strengthened to
+  explicitly enable course-level completion, ensuring the guard is the real
+  reason the forum is not flagged.
+- New: `test_scan_completion_issues_skipped_when_course_completion_off`
+- New: `test_scan_detects_activity_without_completion_when_course_enabled`
+
+---
+
 ## [v1.0.0] — 2026-04-26
 
 First public release.
