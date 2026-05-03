@@ -99,8 +99,8 @@
             </form>
            
             <div class="mt-2">
-                <a class="small text-muted text-decoration-none" data-bs-toggle="collapse" href="#helpManual"
-                   role="button" aria-expanded="false" aria-controls="helpManual">
+                <a class="small text-muted text-decoration-none" data-bs-toggle="collapse" data-toggle="collapse"
+                   href="#helpManual" role="button" aria-expanded="false" aria-controls="helpManual">
                     <i class="fa fa-question-circle me-1" aria-hidden="true"></i>{{#str}} help_manual_title, block_teacher_checklist {{/str}}
                 </a>
                 <div class="collapse mt-2" id="helpManual">
@@ -114,21 +114,30 @@
 
     <ul class="nav nav-tabs" id="checklistTabs" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending" type="button" role="tab">
+            <button class="nav-link active" id="pending-tab"
+                    data-bs-toggle="tab" data-bs-target="#pending"
+                    data-toggle="tab" data-target="#pending"
+                    type="button" role="tab">
                 {{#str}} tab_pending, block_teacher_checklist {{/str}}
-                <span class="badge bg-danger ms-1">{{count_pending}}</span>
+                <span class="badge bg-danger text-white ms-1">{{count_pending}}</span>
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="ignored-tab" data-bs-toggle="tab" data-bs-target="#ignored" type="button" role="tab">
+            <button class="nav-link" id="ignored-tab"
+                    data-bs-toggle="tab" data-bs-target="#ignored"
+                    data-toggle="tab" data-target="#ignored"
+                    type="button" role="tab">
                 {{#str}} tab_ignored, block_teacher_checklist {{/str}}
-                <span class="badge bg-secondary ms-1">{{count_ignored}}</span>
+                <span class="badge bg-secondary text-dark ms-1">{{count_ignored}}</span>
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="done-tab" data-bs-toggle="tab" data-bs-target="#done" type="button" role="tab">
+            <button class="nav-link" id="done-tab"
+                    data-bs-toggle="tab" data-bs-target="#done"
+                    data-toggle="tab" data-target="#done"
+                    type="button" role="tab">
                 {{#str}} tab_done, block_teacher_checklist {{/str}}
-                <span class="badge bg-success ms-1">{{count_done}}</span>
+                <span class="badge bg-success text-white ms-1">{{count_done}}</span>
             </button>
         </li>
     </ul>
@@ -136,92 +145,84 @@
     <div class="tab-content border border-top-0 p-3 bg-white" id="myTabContent">
         
         <div class="tab-pane fade show active" id="pending" role="tabpanel" aria-labelledby="pending-tab">
-            {{#has_pending}}
-                <div class="d-flex align-items-center mb-3 bg-light p-2 rounded border bulk-toolbar">
-                    <div class="form-check ms-2 me-3">
-                        <input class="form-check-input select-all-toggle" type="checkbox"
-                               id="select-all-pending" data-target="#list-pending">
-                        <label class="form-check-label small text-muted" for="select-all-pending">
-                            {{#str}} bulk_select_all, block_teacher_checklist {{/str}}
-                        </label>
-                    </div>
-                    <div class="bulk-actions-container">
-                        <span class="me-2 small fw-bold">{{#str}} bulk_actions, block_teacher_checklist {{/str}}</span>
-                        <button class="btn btn-sm btn-outline-success me-1 bulk-btn" data-action="1" data-courseid="{{courseid}}">
-                            ✔ {{#str}} bulk_done, block_teacher_checklist {{/str}}
-                        </button>
-                        <button class="btn btn-sm btn-outline-danger bulk-btn" data-action="2" data-courseid="{{courseid}}">
-                            ✖ {{#str}} bulk_ignore, block_teacher_checklist {{/str}}
-                        </button>
-                    </div>
+            <div class="d-flex align-items-center mb-3 bg-light p-2 rounded border bulk-toolbar{{^has_pending}} d-none{{/has_pending}}">
+                <div class="form-check ms-2 me-3">
+                    <input class="form-check-input select-all-toggle" type="checkbox"
+                           id="select-all-pending" data-target="#list-pending">
+                    <label class="form-check-label small text-muted" for="select-all-pending">
+                        {{#str}} bulk_select_all, block_teacher_checklist {{/str}}
+                    </label>
                 </div>
-                <div class="list-group block_teacher_checklist" id="list-pending">
-                    {{#items_pending}}
-                        {{> block_teacher_checklist/checklist_item }}
-                    {{/items_pending}}
+                <div class="bulk-actions-container">
+                    <span class="me-2 small fw-bold">{{#str}} bulk_actions, block_teacher_checklist {{/str}}</span>
+                    <button class="btn btn-sm btn-outline-success me-1 bulk-btn bulk-done-btn" data-action="1" data-courseid="{{courseid}}">
+                        ✔ {{#str}} bulk_done, block_teacher_checklist {{/str}}<span class="bulk-count ms-1"></span>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger bulk-btn bulk-ignore-btn" data-action="2" data-courseid="{{courseid}}">
+                        ✖ {{#str}} bulk_ignore, block_teacher_checklist {{/str}}<span class="bulk-count ms-1"></span>
+                    </button>
                 </div>
-            {{/has_pending}}
-            {{^has_pending}}
-                <div class="alert alert-success text-center mt-3">
-                    {{#str}} alert_clean, block_teacher_checklist {{/str}}
-                </div>
-            {{/has_pending}}
+            </div>
+            <div class="list-group block_teacher_checklist" id="list-pending">
+                {{#items_pending}}
+                    {{> block_teacher_checklist/checklist_item }}
+                {{/items_pending}}
+            </div>
+            <div class="alert alert-success text-center mt-3 tc-empty-alert{{#has_pending}} d-none{{/has_pending}}">
+                {{#str}} alert_clean, block_teacher_checklist {{/str}}
+            </div>
         </div>
 
         <div class="tab-pane fade" id="ignored" role="tabpanel" aria-labelledby="ignored-tab">
-            {{#has_ignored}}
-                <div class="d-flex align-items-center mb-3 bg-light p-2 rounded border bulk-toolbar">
-                    <div class="form-check ms-2 me-3">
-                        <input class="form-check-input select-all-toggle" type="checkbox"
-                               id="select-all-ignored" data-target="#list-ignored">
-                        <label class="form-check-label small text-muted" for="select-all-ignored">
-                            {{#str}} bulk_select_all, block_teacher_checklist {{/str}}
-                        </label>
-                    </div>
-                    <div class="bulk-actions-container">
-                        <span class="me-2 small fw-bold">{{#str}} bulk_actions, block_teacher_checklist {{/str}}</span>
-                        <button class="btn btn-sm btn-outline-secondary bulk-btn" data-action="0" data-courseid="{{courseid}}">
-                            ↺ {{#str}} bulk_restore, block_teacher_checklist {{/str}}
-                        </button>
-                    </div>
+            <div class="d-flex align-items-center mb-3 bg-light p-2 rounded border bulk-toolbar{{#has_ignored}}{{/has_ignored}}{{^has_ignored}} d-none{{/has_ignored}}">
+                <div class="form-check ms-2 me-3">
+                    <input class="form-check-input select-all-toggle" type="checkbox"
+                           id="select-all-ignored" data-target="#list-ignored">
+                    <label class="form-check-label small text-muted" for="select-all-ignored">
+                        {{#str}} bulk_select_all, block_teacher_checklist {{/str}}
+                    </label>
                 </div>
-                <div class="list-group block_teacher_checklist" id="list-ignored">
-                    {{#items_ignored}}
-                        {{> block_teacher_checklist/checklist_item }}
-                    {{/items_ignored}}
+                <div class="bulk-actions-container">
+                    <span class="me-2 small fw-bold">{{#str}} bulk_actions, block_teacher_checklist {{/str}}</span>
+                    <button class="btn btn-sm btn-outline-secondary bulk-btn" data-action="0" data-courseid="{{courseid}}">
+                        ↺ {{#str}} bulk_restore, block_teacher_checklist {{/str}}<span class="bulk-count ms-1"></span>
+                    </button>
                 </div>
-            {{/has_ignored}}
-            {{^has_ignored}}
-                <div class="alert alert-info text-center mt-3">{{#str}} alert_none_ignored, block_teacher_checklist {{/str}}</div>
-            {{/has_ignored}}
+            </div>
+            <div class="list-group block_teacher_checklist" id="list-ignored">
+                {{#items_ignored}}
+                    {{> block_teacher_checklist/checklist_item }}
+                {{/items_ignored}}
+            </div>
+            <div class="alert alert-info text-center mt-3 tc-empty-alert{{^has_ignored}}{{/has_ignored}}{{#has_ignored}} d-none{{/has_ignored}}">
+                {{#str}} alert_none_ignored, block_teacher_checklist {{/str}}
+            </div>
         </div>
 
         <div class="tab-pane fade" id="done" role="tabpanel" aria-labelledby="done-tab">
-            {{#has_done}}
-                <div class="d-flex align-items-center mb-3 bg-light p-2 rounded border bulk-toolbar">
-                    <div class="form-check ms-2 me-3">
-                        <input class="form-check-input select-all-toggle" type="checkbox"
-                               id="select-all-done" data-target="#list-done">
-                        <label class="form-check-label small text-muted" for="select-all-done">
-                            {{#str}} bulk_select_all, block_teacher_checklist {{/str}}
-                        </label>
-                    </div>
-                    <div class="bulk-actions-container">
-                        <span class="me-2 small fw-bold">{{#str}} bulk_actions, block_teacher_checklist {{/str}}</span>
-                        <button class="btn btn-sm btn-outline-secondary bulk-btn" data-action="0" data-courseid="{{courseid}}">
-                            ↺ {{#str}} bulk_restore, block_teacher_checklist {{/str}}
-                        </button>
-                    </div>
+            <div class="d-flex align-items-center mb-3 bg-light p-2 rounded border bulk-toolbar{{#has_done}}{{/has_done}}{{^has_done}} d-none{{/has_done}}">
+                <div class="form-check ms-2 me-3">
+                    <input class="form-check-input select-all-toggle" type="checkbox"
+                           id="select-all-done" data-target="#list-done">
+                    <label class="form-check-label small text-muted" for="select-all-done">
+                        {{#str}} bulk_select_all, block_teacher_checklist {{/str}}
+                    </label>
                 </div>
-                <div class="list-group block_teacher_checklist" id="list-done">
-                    {{#items_done}}
-                        {{> block_teacher_checklist/checklist_item }}
-                    {{/items_done}}
+                <div class="bulk-actions-container">
+                    <span class="me-2 small fw-bold">{{#str}} bulk_actions, block_teacher_checklist {{/str}}</span>
+                    <button class="btn btn-sm btn-outline-secondary bulk-btn" data-action="0" data-courseid="{{courseid}}">
+                        ↺ {{#str}} bulk_restore, block_teacher_checklist {{/str}}<span class="bulk-count ms-1"></span>
+                    </button>
                 </div>
-            {{/has_done}}
-            {{^has_done}}
-                <div class="alert alert-info text-center mt-3">{{#str}} alert_none_done, block_teacher_checklist {{/str}}</div>
-            {{/has_done}}
+            </div>
+            <div class="list-group block_teacher_checklist" id="list-done">
+                {{#items_done}}
+                    {{> block_teacher_checklist/checklist_item }}
+                {{/items_done}}
+            </div>
+            <div class="alert alert-info text-center mt-3 tc-empty-alert{{^has_done}}{{/has_done}}{{#has_done}} d-none{{/has_done}}">
+                {{#str}} alert_none_done, block_teacher_checklist {{/str}}
+            </div>
         </div>
     </div>
 </div>

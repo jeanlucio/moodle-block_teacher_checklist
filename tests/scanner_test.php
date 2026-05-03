@@ -443,9 +443,15 @@ final class scanner_test extends advanced_testcase {
     }
 
     /**
-     * The Announcements (news) forum must never be flagged for missing completion tracking.
+     * The Announcements (news) forum must never be flagged for missing completion tracking,
+     * even when course-level completion is enabled and the forum has COMPLETION_TRACKING_NONE.
      */
     public function test_scan_completion_disabled_does_not_flag_news_forum(): void {
+        global $DB;
+
+        $DB->set_field('course', 'enablecompletion', 1, ['id' => $this->course->id]);
+        $this->course->enablecompletion = 1;
+
         $this->getDataGenerator()->create_module('forum', [
             'course'     => $this->course->id,
             'type'       => 'news',
@@ -459,6 +465,57 @@ final class scanner_test extends advanced_testcase {
         $this->assertEmpty(
             $compissues,
             'News/Announcements forum must not be flagged for disabled completion tracking.'
+        );
+    }
+
+    /**
+     * When course-level completion tracking is disabled, scan_completion_disabled()
+     * must return no issues at all, even for activities with COMPLETION_TRACKING_NONE.
+     * The teacher cannot configure completion on activities when the course disables it.
+     */
+    public function test_scan_completion_issues_skipped_when_course_completion_off(): void {
+        global $DB;
+
+        $DB->set_field('course', 'enablecompletion', 0, ['id' => $this->course->id]);
+        $this->course->enablecompletion = 0;
+
+        $this->getDataGenerator()->create_module('assign', [
+            'course'     => $this->course->id,
+            'completion' => COMPLETION_TRACKING_NONE,
+        ]);
+
+        $scanner = new scanner($this->course);
+        $issues = $scanner->get_all_issues();
+
+        $compissues = array_filter($issues, fn($i) => $i['subtype'] === 'completion_disabled');
+        $this->assertEmpty(
+            $compissues,
+            'No completion issues should be raised when course-level completion tracking is off.'
+        );
+    }
+
+    /**
+     * When course-level completion tracking is enabled, an activity with
+     * COMPLETION_TRACKING_NONE must be flagged.
+     */
+    public function test_scan_detects_activity_without_completion_when_course_enabled(): void {
+        global $DB;
+
+        $DB->set_field('course', 'enablecompletion', 1, ['id' => $this->course->id]);
+        $this->course->enablecompletion = 1;
+
+        $this->getDataGenerator()->create_module('assign', [
+            'course'     => $this->course->id,
+            'completion' => COMPLETION_TRACKING_NONE,
+        ]);
+
+        $scanner = new scanner($this->course);
+        $issues = $scanner->get_all_issues();
+
+        $compissues = array_filter($issues, fn($i) => $i['subtype'] === 'completion_disabled');
+        $this->assertNotEmpty(
+            $compissues,
+            'Activity with completion tracking disabled must be flagged when the course has completion enabled.'
         );
     }
 }

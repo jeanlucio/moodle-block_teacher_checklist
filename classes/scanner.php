@@ -455,6 +455,9 @@ class scanner {
      * @return array List of issues.
      */
     protected function scan_completion_disabled(): array {
+        if (empty($this->course->enablecompletion)) {
+            return [];
+        }
         $issues = [];
         $newsforumcmids = $this->get_news_forum_cmids();
         foreach ($this->modinfo->cms as $cm) {

@@ -52,12 +52,12 @@
     }
 }}
 <div class="block-teacher-checklist-summary">
-    <div class="form-check form-switch mb-3 d-flex justify-content-between align-items-center ps-0">
-        <label class="form-check-label small text-muted mb-0 me-2" for="blockScanToggle">
+    <div class="d-flex align-items-center justify-content-between mb-3 form-switch">
+        <label class="small text-muted mb-0 me-2" for="blockScanToggle">
             {{#str}} scan_enabled, block_teacher_checklist {{/str}}
         </label>
-        <input class="form-check-input toggle-scan-switch ms-0" type="checkbox" id="blockScanToggle"
-               data-courseid="{{courseid}}" 
+        <input class="form-check-input toggle-scan-switch m-0 position-static" type="checkbox" role="switch"
+               id="blockScanToggle" data-courseid="{{courseid}}"
                {{#is_scan_active}}checked{{/is_scan_active}}>
     </div>
     

@@ -25,6 +25,18 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, Aja
     return {
         init: function() {
 
+            // Strings pre-loaded for dynamic button creation.
+            var strings = {markdone: '', ignore: '', restore: ''};
+            Str.get_strings([
+                {key: 'mark_done', component: 'block_teacher_checklist'},
+                {key: 'ignore', component: 'block_teacher_checklist'},
+                {key: 'restore', component: 'block_teacher_checklist'}
+            ]).done(function(s) {
+                strings.markdone = s[0];
+                strings.ignore = s[1];
+                strings.restore = s[2];
+            });
+
             /**
              * Sends update requests to the server.
              * @param {Array} itemsData Array of item objects.
@@ -48,13 +60,135 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, Aja
             }
 
             /**
-             * Removes a checklist item element from the list with a fade animation.
-             * @param {jQuery} el The item element ([data-region="checklist-item"]).
+             * Builds an action button element.
+             * @param {string} classes Extra CSS classes.
+             * @param {number} status Target status value.
+             * @param {Object} data Item data attributes.
+             * @param {string} iconClass FontAwesome icon class (e.g. "fa-check").
+             * @param {string} label Accessible label.
+             * @returns {jQuery} The button element.
              */
-            function removeItem(el) {
-                el.fadeOut(300, function() {
-                    $(this).remove();
+            function buildBtn(classes, status, data, iconClass, label) {
+                return $('<button type="button"></button>')
+                    .addClass('btn btn-sm ' + classes)
+                    .attr({
+                        'data-action': 'toggle-status',
+                        'data-courseid': data.courseid,
+                        'data-type': data.type,
+                        'data-subtype': data.subtype,
+                        'data-docid': data.docid,
+                        'data-status': status,
+                        'title': label,
+                        'aria-label': label
+                    })
+                    .html('<i class="fa ' + iconClass + '" aria-hidden="true"></i>');
+            }
+
+            /**
+             * Extracts item data from an item element's action buttons.
+             * @param {jQuery} item The checklist item element.
+             * @returns {Object} Item data for AJAX requests.
+             */
+            function getItemData(item) {
+                var btn = item.find('[data-action="toggle-status"]').first();
+                return {
+                    courseid: btn.data('courseid'),
+                    type: item.data('item-type'),
+                    subtype: btn.data('subtype'),
+                    docid: btn.data('docid')
+                };
+            }
+
+            /**
+             * Updates a tab badge count by a delta value.
+             * @param {string} tabBtnId CSS selector of the tab button.
+             * @param {number} delta Positive or negative integer.
+             */
+            function updateBadge(tabBtnId, delta) {
+                var badge = $(tabBtnId).find('.badge');
+                var n = Math.max(0, (parseInt(badge.text(), 10) || 0) + delta);
+                badge.text(n);
+            }
+
+            /**
+             * Shows/hides the bulk toolbar and empty-state alert based on list content.
+             * @param {jQuery} tabPane The tab-pane container.
+             */
+            function refreshTabState(tabPane) {
+                var hasItems = tabPane.find('.list-group [data-region="checklist-item"]').length > 0;
+                tabPane.find('.bulk-toolbar').toggleClass('d-none', !hasItems);
+                tabPane.find('.tc-empty-alert').toggleClass('d-none', hasItems);
+            }
+
+            /**
+             * Renumbers visible items in a list sequentially.
+             * @param {jQuery} list The list-group element.
+             */
+            function renumberList(list) {
+                list.find('[data-region="checklist-item"] .item-number').each(function(i) {
+                    $(this).text((i + 1) + '.');
                 });
+            }
+
+            /**
+             * Moves a checklist item to the appropriate list after a status change,
+             * updating its buttons, badge counts, and tab empty states.
+             * @param {jQuery} item The checklist item element.
+             * @param {number} newStatus 0 = restore, 1 = done, 2 = ignored.
+             */
+            function moveItem(item, newStatus) {
+                var data = getItemData(item);
+                var type = item.data('item-type');
+                var actionsDiv = item.find('.actions');
+                var checkbox = item.find('.item-checkbox');
+                var sourceTabPane = item.closest('.tab-pane');
+                var sourceId = sourceTabPane.attr('id');
+                var targetListId, targetTabBtnId;
+
+                actionsDiv.empty();
+
+                if (newStatus === 0) {
+                    // Restore to pending.
+                    item.removeClass('bg-light');
+                    if (type === 'manual') {
+                        actionsDiv.append(buildBtn('btn-outline-success me-1', 1, data, 'fa-check', strings.markdone));
+                        checkbox.attr('data-markable', '1');
+                    } else {
+                        checkbox.removeAttr('data-markable');
+                    }
+                    actionsDiv.append(buildBtn('btn-outline-danger', 2, data, 'fa-times', strings.ignore));
+                    targetListId = '#list-pending';
+                    targetTabBtnId = '#pending-tab';
+
+                } else if (newStatus === 1) {
+                    // Mark as done.
+                    item.addClass('bg-light');
+                    checkbox.removeAttr('data-markable');
+                    actionsDiv.append(buildBtn('btn-outline-secondary me-1', 0, data, 'fa-undo', strings.restore));
+                    targetListId = '#list-done';
+                    targetTabBtnId = '#done-tab';
+
+                } else {
+                    // Ignore.
+                    item.removeClass('bg-light');
+                    checkbox.removeAttr('data-markable');
+                    actionsDiv.append(buildBtn('btn-outline-secondary me-1', 0, data, 'fa-undo', strings.restore));
+                    targetListId = '#list-ignored';
+                    targetTabBtnId = '#ignored-tab';
+                }
+
+                var sourceTabBtnId = '#' + sourceId + '-tab';
+                var targetList = $(targetListId);
+
+                checkbox.prop('checked', false);
+                targetList.append(item);
+
+                updateBadge(sourceTabBtnId, -1);
+                updateBadge(targetTabBtnId, 1);
+                refreshTabState(sourceTabPane);
+                refreshTabState(targetList.closest('.tab-pane'));
+                renumberList(sourceTabPane.find('.list-group'));
+                renumberList(targetList);
             }
 
             // 1. INDIVIDUAL TOGGLE BUTTONS (Done, Ignore, Restore).
@@ -65,15 +199,16 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, Aja
                 btn.prop('disabled', true);
 
                 var item = btn.closest('[data-region="checklist-item"]');
+                var status = parseInt(btn.data('status'), 10);
 
                 processUpdates([{
                     courseid: btn.data('courseid'),
                     type: btn.data('type'),
                     subtype: btn.data('subtype'),
                     docid: btn.data('docid'),
-                    status: btn.data('status')
+                    status: status
                 }], function() {
-                    removeItem(item);
+                    moveItem(item, status);
                 });
             });
 
@@ -86,13 +221,26 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, Aja
             });
 
             // 3. BULK ACTIONS VISIBILITY.
-            // Delegated on body to handle dynamically added checkboxes.
+            // The "Mark done" button is only shown when at least one selected item
+            // has data-markable (manual items). Auto-scan items are excluded from that action.
+            // Counts on each button reflect how many items each action will affect.
             $('body').on('change', '.item-checkbox', function() {
                 var container = $(this).closest('.tab-pane');
-                var totalChecked = container.find('.item-checkbox:checked').length;
+                var checked = container.find('.item-checkbox:checked');
+                var totalChecked = checked.length;
                 var bulkContainer = container.find('.bulk-actions-container');
 
                 if (totalChecked > 0) {
+                    var markableCount = checked.filter('[data-markable]').length;
+                    var doneBtn = container.find('.bulk-done-btn');
+                    var ignoreBtn = container.find('.bulk-ignore-btn');
+
+                    doneBtn.toggle(markableCount > 0);
+                    doneBtn.find('.bulk-count').text('(' + markableCount + ')');
+                    ignoreBtn.find('.bulk-count').text('(' + totalChecked + ')');
+                    container.find('.bulk-btn:not(.bulk-done-btn):not(.bulk-ignore-btn)')
+                        .find('.bulk-count').text('(' + totalChecked + ')');
+
                     bulkContainer.fadeIn(200);
                 } else {
                     bulkContainer.fadeOut(200);
@@ -107,10 +255,14 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, Aja
                 var newStatus = btn.data('action');
                 var courseId = btn.data('courseid');
                 var container = btn.closest('.tab-pane');
+                var isDoneAction = (parseInt(newStatus, 10) === 1);
                 var checkedBoxes = container.find('.item-checkbox:checked');
+
+                // For "done", only process markable items (manual ones).
+                var actionBoxes = isDoneAction ? checkedBoxes.filter('[data-markable]') : checkedBoxes;
                 var requests = [];
 
-                checkedBoxes.each(function() {
+                actionBoxes.each(function() {
                     var chk = $(this);
                     requests.push({
                         courseid: courseId,
@@ -124,14 +276,14 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, Aja
                 if (requests.length > 0) {
                     btn.prop('disabled', true);
 
-                    // Collect item elements before the async call.
-                    var itemElements = checkedBoxes.map(function() {
+                    // Collect only the item elements that will actually be processed.
+                    var itemElements = actionBoxes.map(function() {
                         return $(this).closest('[data-region="checklist-item"]')[0];
                     }).get();
 
                     processUpdates(requests, function() {
                         $.each(itemElements, function(i, el) {
-                            removeItem($(el));
+                            moveItem($(el), parseInt(newStatus, 10));
                         });
                         container.find('.bulk-actions-container').fadeOut(200);
                         container.find('.select-all-toggle').prop('checked', false);
