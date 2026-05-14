@@ -37,19 +37,27 @@ class renderer extends plugin_renderer_base {
      */
     public function render_block_summary(array $issues, int $courseid, bool $isscanactive): string {
         $limit = 5;
-        $displayissues = array_slice($issues, 0, $limit);
+        $total = count($issues);
         $formattedissues = [];
 
-        foreach ($displayissues as $issue) {
-            $formattedissues[] = $this->prepare_issue_for_template($issue, $courseid, 'pending', false);
+        $counter = 0;
+        foreach ($issues as $issue) {
+            $context = $this->prepare_issue_for_template($issue, $courseid, 'pending', false);
+            if ($counter >= $limit) {
+                $context['extra_classes'] = ' d-none';
+            }
+            $formattedissues[] = $context;
+            $counter++;
         }
+
+        $morecount = max(0, $total - $limit);
 
         $data = [
             'hasissues' => !empty($issues),
             'issues' => $formattedissues,
-            'is_scan_active' => $isscanactive, // Scanner status.
-            'courseid' => $courseid, // Important for the button data-courseid.
-            'moreissues' => count($issues) > $limit ? ['count' => count($issues) - $limit] : false,
+            'is_scan_active' => $isscanactive,
+            'courseid' => $courseid,
+            'moreissues' => $morecount > 0 ? ['count' => $morecount] : false,
             'fullreporturl' => (new moodle_url('/blocks/teacher_checklist/view.php', ['id' => $courseid]))->out(false),
         ];
 

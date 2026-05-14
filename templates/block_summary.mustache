@@ -62,26 +62,22 @@
     </div>
     
     <hr class="my-2">
-    {{#hasissues}}
-        <div class="list-group list-group-flush mb-3">
-            {{#issues}}
-                {{> block_teacher_checklist/checklist_item }}
-            {{/issues}}
-        </div>
-        
-        {{#moreissues}}
-        <div class="text-center small text-muted fst-italic mb-2">
-            {{#str}} andmore, block_teacher_checklist, {{count}} {{/str}}
-        </div>
-        {{/moreissues}}
-    {{/hasissues}}
+    <div class="list-group list-group-flush mb-3 {{^hasissues}}d-none{{/hasissues}}" data-region="block-items-list">
+        {{#issues}}
+            {{> block_teacher_checklist/checklist_item }}
+        {{/issues}}
+    </div>
 
-    {{^hasissues}}
-        <div class="alert alert-success d-flex align-items-center" role="alert">
-            <i class="fa fa-check-circle fa-lg me-2" aria-hidden="true"></i>
-            <div>{{#str}} no_issues_found, block_teacher_checklist {{/str}}</div>
-        </div>
-    {{/hasissues}}
+    {{#moreissues}}
+    <div class="text-center small text-muted fst-italic mb-2" data-region="block-more-count" data-count="{{count}}">
+        {{#str}} andmore, block_teacher_checklist, {{count}} {{/str}}
+    </div>
+    {{/moreissues}}
+
+    <div class="alert alert-success d-flex align-items-center {{#hasissues}}d-none{{/hasissues}}" data-region="block-all-clear" role="alert">
+        <i class="fa fa-check-circle fa-lg me-2" aria-hidden="true"></i>
+        <div>{{#str}} no_issues_found, block_teacher_checklist {{/str}}</div>
+    </div>
 
     <div class="text-center">
         <a href="{{fullreporturl}}" class="btn btn-primary btn-sm w-100">

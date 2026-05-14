@@ -145,6 +145,53 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, Aja
                 var sourceId = sourceTabPane.attr('id');
                 var targetListId, targetTabBtnId;
 
+                if (newStatus === 0) {
+                    targetListId = '#list-pending';
+                    targetTabBtnId = '#pending-tab';
+                } else if (newStatus === 1) {
+                    targetListId = '#list-done';
+                    targetTabBtnId = '#done-tab';
+                } else {
+                    targetListId = '#list-ignored';
+                    targetTabBtnId = '#ignored-tab';
+                }
+
+                var targetList = $(targetListId);
+
+                if (targetList.length === 0) {
+                    // Compact block view — skip button swap to avoid a visual flash,
+                    // remove the item directly and reveal the next hidden one.
+                    var blockList = $('[data-region="block-items-list"]');
+                    var summaryContainer = blockList.closest('.block-teacher-checklist-summary');
+                    var moreDiv = summaryContainer.find('[data-region="block-more-count"]');
+                    var hiddenNext = blockList.find('[data-region="checklist-item"].d-none').first();
+
+                    item.fadeOut(300, function() {
+                        item.remove();
+
+                        if (hiddenNext.length > 0) {
+                            hiddenNext.removeClass('d-none');
+                            var newCount = Math.max(0, (parseInt(moreDiv.data('count'), 10) || 0) - 1);
+                            moreDiv.data('count', newCount);
+                            if (newCount > 0) {
+                                Str.get_string('andmore', 'block_teacher_checklist', newCount).done(function(s) {
+                                    moreDiv.text(s);
+                                });
+                            } else {
+                                moreDiv.addClass('d-none');
+                            }
+                        }
+
+                        var hasVisible = blockList.find('[data-region="checklist-item"]:not(.d-none)').length > 0;
+                        if (!hasVisible) {
+                            blockList.addClass('d-none');
+                            summaryContainer.find('[data-region="block-all-clear"]').removeClass('d-none');
+                        }
+                    });
+                    return;
+                }
+
+                // Full view: update buttons before moving the item.
                 actionsDiv.empty();
 
                 if (newStatus === 0) {
@@ -157,30 +204,24 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, Aja
                         checkbox.removeAttr('data-markable');
                     }
                     actionsDiv.append(buildBtn('btn-outline-danger', 2, data, 'fa-times', strings.ignore));
-                    targetListId = '#list-pending';
-                    targetTabBtnId = '#pending-tab';
 
                 } else if (newStatus === 1) {
                     // Mark as done.
                     item.addClass('bg-light');
                     checkbox.removeAttr('data-markable');
                     actionsDiv.append(buildBtn('btn-outline-secondary me-1', 0, data, 'fa-undo', strings.restore));
-                    targetListId = '#list-done';
-                    targetTabBtnId = '#done-tab';
 
                 } else {
                     // Ignore.
                     item.removeClass('bg-light');
                     checkbox.removeAttr('data-markable');
                     actionsDiv.append(buildBtn('btn-outline-secondary me-1', 0, data, 'fa-undo', strings.restore));
-                    targetListId = '#list-ignored';
-                    targetTabBtnId = '#ignored-tab';
                 }
 
                 var sourceTabBtnId = '#' + sourceId + '-tab';
-                var targetList = $(targetListId);
 
                 checkbox.prop('checked', false);
+
                 targetList.append(item);
 
                 updateBadge(sourceTabBtnId, -1);
