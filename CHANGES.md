@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v1.2.0] — 2026-05-14
+
+### Improved
+
+- **Block compact view — instant item removal** — ignoring or marking an item
+  as done in the block sidebar now fades it out immediately, without briefly
+  showing the restore button first.
+- **Block compact view — dynamic list refill** — when an item is removed, the
+  next hidden item slides into the visible area automatically.
+- **Block compact view — live counter** — the "and N more…" label decrements
+  as items are dismissed; it hides itself when the count reaches zero. When
+  all items are resolved the all-clear message appears without a page reload.
+
+### Fixed
+
+- **Hidden items on first render** — `array_filter` preserved non-contiguous
+  array keys from the merged auto+manual issues list, causing the renderer to
+  apply `d-none` to visible items instead of only the overflow ones.
+
+---
+
 ## [v1.1.0] — 2026-05-03
 
 ### Fixed
