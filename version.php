@@ -25,7 +25,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'block_teacher_checklist';
-$plugin->version   = 2026051400;
+$plugin->version   = 2026051401;
 $plugin->requires  = 2024100700; // Requires Moodle 4.5 or later.
+$plugin->supported = [405, 502];
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = 'v1.2.0';
+$plugin->release   = 'v1.2.1';

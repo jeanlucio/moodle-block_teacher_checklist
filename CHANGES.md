@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v1.2.1] — 2026-05-14
+
+### Added
+
+- Plugin icon (`pix/icon.svg`).
+
+---
+
 ## [v1.2.0] — 2026-05-14
 
 ### Improved
