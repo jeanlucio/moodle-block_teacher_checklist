@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v1.2.2] — 2026-05-17
+
+### Fixed
+
+- **All-clear alert visible alongside pending items** — the alert had a
+  hardcoded `d-flex` and a conditional `d-none` on the same element; in both
+  Bootstrap 4 and 5, `d-flex` wins because it appears later in the compiled
+  stylesheet. Only one display utility is now applied at a time.
+
+---
+
 ## [v1.2.1] — 2026-05-14
 
 ### Added
