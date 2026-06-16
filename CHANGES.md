@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v1.3.0] — 2026-06-16
+
+### Added
+
+- **Public API for seeding manual items from other plugins** —
+  `block_teacher_checklist\local\external_tasks::replace()` lets a companion
+  plugin provision a list of manual checklist items into a course. Items are
+  tagged with the requesting component in the `subtype` column, so the source
+  plugin can replace its own set without touching items the teacher added by
+  hand. Used by `local_virtuallab` to push a shared task list into every lab.
+
+---
+
 ## [v1.2.3] — 2026-06-16
 
 ### Fixed
