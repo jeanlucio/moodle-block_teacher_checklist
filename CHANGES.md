@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v1.2.3] — 2026-06-16
+
+### Fixed
+
+- **PHP 8.1+ deprecation on courses with no summary** — `strip_tags()` was
+  called directly on `course->summary`, which is `null` for courses created
+  without a summary (a valid value per the core schema). The value is now
+  cast to string before stripping tags.
+
+---
+
 ## [v1.2.2] — 2026-05-17
 
 ### Fixed

@@ -149,7 +149,7 @@ class scanner {
     protected function scan_course_settings(): array {
         $issues = [];
 
-        if (empty(strip_tags($this->course->summary))) {
+        if (empty(strip_tags((string) $this->course->summary))) {
             $status = $this->get_status('course_nosummary', 0);
             $issues[] = $this->make_issue(
                 'course_nosummary',
