@@ -46,6 +46,12 @@ jobs:
         with:
           path: plugin
 
+      - name: Check out local_virtuallab
+        uses: actions/checkout@v5
+        with:
+          repository: jeanlucio/moodle-local_virtuallab
+          path: extra_plugins/local_virtuallab
+
       - name: Setup PHP ${{ matrix.php }}
         uses: shivammathur/setup-php@v2
         with:
@@ -63,7 +69,7 @@ jobs:
           echo "NVM_DIR=$HOME/.nvm" >> $GITHUB_ENV
 
       - name: Install moodle-plugin-ci
-        run: moodle-plugin-ci install --plugin ./plugin --db-host=127.0.0.1
+        run: moodle-plugin-ci install --plugin ./plugin --extra-plugins ./extra_plugins --db-host=127.0.0.1
         env:
           DB: ${{ matrix.database }}
           MOODLE_BRANCH: ${{ matrix.moodle-branch }}
