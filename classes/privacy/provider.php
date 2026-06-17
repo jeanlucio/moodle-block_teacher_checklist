@@ -224,14 +224,14 @@ class provider implements
      * @param int $status The status code.
      * @return string The status name.
      */
-    private static function get_status_name($status) {
+    private static function get_status_name(int $status): string {
         switch ($status) {
             case 1:
-                return 'Done';
+                return get_string('status_done', 'block_teacher_checklist');
             case 2:
-                return 'Ignored';
+                return get_string('status_ignored', 'block_teacher_checklist');
             default:
-                return 'Pending';
+                return get_string('status_pending', 'block_teacher_checklist');
         }
     }
 }

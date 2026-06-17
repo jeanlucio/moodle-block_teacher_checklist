@@ -37,6 +37,10 @@ class external_tasks {
      * recreated from the given titles. Items added by the teacher (empty subtype) and
      * items provisioned by other sources are left untouched.
      *
+     * This method performs destructive writes (delete + insert) and intentionally does
+     * no access control of its own. Callers MUST verify the capability
+     * moodle/course:update on the course context before invoking it.
+     *
      * @param int      $courseid Course to seed the items into.
      * @param string   $source   Frankenstyle component requesting the seed (e.g. local_virtuallab).
      * @param string[] $titles   Item titles in display order; empty entries are skipped.
