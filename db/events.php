@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details for the teacher_checklist block.
+ * Event observers for block_teacher_checklist.
  *
  * @package    block_teacher_checklist
  * @copyright  2026 Jean Lúcio
@@ -24,9 +24,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->component = 'block_teacher_checklist';
-$plugin->version   = 2026070300;
-$plugin->requires  = 2024100700; // Requires Moodle 4.5 or later.
-$plugin->supported = [405, 502];
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = 'v1.3.0';
+$observers = [
+    [
+        'eventname' => \core\event\course_deleted::class,
+        'callback'  => \block_teacher_checklist\observer::class . '::course_deleted',
+    ],
+];
