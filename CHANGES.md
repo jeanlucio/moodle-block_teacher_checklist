@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v1.3.1] — 2026-07-03
+
+### Fixed
+
+- **Checklist items left behind after course deletion** — the table is keyed
+  by `courseid` rather than block instance, which is correct (removing the
+  block from a page must not wipe the checklist), but nothing cleaned it up
+  when the course itself was deleted. An event observer now removes a
+  course's checklist items when it is deleted, reusing the same logic
+  already used for GDPR deletion requests.
+- **Unlocalised status in GDPR export** — the exported item status
+  (Done/Ignored/Pending) is now translated through `get_string()` instead of
+  hardcoded English, so a data export respects the user's active language.
+
+---
+
 ## [v1.3.0] — 2026-06-16
 
 ### Added
