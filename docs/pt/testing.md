@@ -14,8 +14,8 @@ Cada push no CI executa as suítes PHPUnit e Behat contra as versões do Moodle 
 | `tests/external_tasks_test.php` | 5 | A API pública: inserção, idempotência, outras origens e itens do professor preservados, títulos em branco ignorados, limpeza de uma origem |
 | `tests/observer_test.php` | 1 | Excluir um curso remove apenas os itens daquele curso |
 | `tests/backup_restore_test.php` | 3 | Backup e restauração reais de um curso: a chave da verificação e os itens manuais acompanham, os automáticos não, o destino mantém a própria chave |
-| `tests/privacy/privacy_test.php` | 9 | Metadados, descoberta de contextos e usuários, exportação localizada, exclusão por usuário, por contexto e por lista de usuários, e a exclusão preservando o estado do curso e os itens de outros professores |
-| **Total** | **76** | |
+| `tests/privacy/privacy_test.php` | 10 | Metadados declarando todas as colunas da tabela, descoberta de contextos e usuários, exportação localizada, exclusão por usuário, por contexto e por lista de usuários, e a exclusão preservando o estado do curso e os itens de outros professores |
+| **Total** | **77** | |
 
 ### Behat — Testes de Aceitação
 

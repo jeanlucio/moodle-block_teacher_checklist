@@ -87,6 +87,32 @@ final class privacy_test extends advanced_testcase {
     }
 
     /**
+     * Every column of the table is declared, and every declaration has its language string.
+     *
+     * Comparing the whole sets fails when a column is added to the table without a privacy decision, which a
+     * per-key assertion would not notice.
+     */
+    public function test_metadata_declares_every_column_of_the_table(): void {
+        global $DB;
+
+        $items = provider::get_metadata(new collection('block_teacher_checklist'))->get_collection();
+        $declared = $items[0]->get_privacy_fields();
+
+        $columns = array_diff(array_keys($DB->get_columns('block_teacher_checklist')), ['id']);
+        $declaredcolumns = array_keys($declared);
+        sort($columns);
+        sort($declaredcolumns);
+        $this->assertSame(array_values($columns), $declaredcolumns);
+
+        foreach ($declared as $stringkey) {
+            $this->assertTrue(
+                get_string_manager()->string_exists($stringkey, 'block_teacher_checklist'),
+                "Missing language string {$stringkey}"
+            );
+        }
+    }
+
+    /**
      * get_contexts_for_userid returns only courses where the user has items.
      */
     public function test_get_contexts_for_userid(): void {

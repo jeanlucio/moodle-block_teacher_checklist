@@ -46,10 +46,15 @@ class provider implements
         $collection->add_database_table(
             'block_teacher_checklist',
             [
+                'courseid' => 'privacy:metadata:courseid',
                 'userid' => 'privacy:metadata:userid',
+                'type' => 'privacy:metadata:type',
+                'subtype' => 'privacy:metadata:subtype',
+                'docid' => 'privacy:metadata:docid',
                 'title' => 'privacy:metadata:title',
                 'status' => 'privacy:metadata:status',
                 'timecreated' => 'privacy:metadata:timecreated',
+                'timemodified' => 'privacy:metadata:timemodified',
             ],
             'privacy:metadata:tableexplanation'
         );

@@ -14,8 +14,8 @@ Every CI push runs the PHPUnit and Behat suites against the supported Moodle ver
 | `tests/external_tasks_test.php` | 5 | The public API: insert, idempotency, other sources and teacher items preserved, blank titles skipped, clearing a source |
 | `tests/observer_test.php` | 1 | Deleting a course removes only that course's items |
 | `tests/backup_restore_test.php` | 3 | A real course backup and restore: scan switch and manual items travel, automatic items do not, the destination keeps its own switch |
-| `tests/privacy/privacy_test.php` | 9 | Metadata, context and user discovery, localised export, deletion per user, per context and for a user list, and the erasure keeping the course-wide state and the items of other teachers |
-| **Total** | **76** | |
+| `tests/privacy/privacy_test.php` | 10 | Metadata declaring every column of the table, context and user discovery, localised export, deletion per user, per context and for a user list, and the erasure keeping the course-wide state and the items of other teachers |
+| **Total** | **77** | |
 
 ### Behat — Acceptance Tests
 
