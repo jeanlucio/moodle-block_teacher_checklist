@@ -518,4 +518,53 @@ final class scanner_test extends advanced_testcase {
             'Activity with completion tracking disabled must be flagged when the course has completion enabled.'
         );
     }
+
+    /**
+     * A quiz with no questions must produce a 'mod_quiz_empty' issue.
+     */
+    public function test_scan_detects_quiz_without_questions(): void {
+        $this->getDataGenerator()->create_module('quiz', ['course' => $this->course->id]);
+
+        $issues = (new scanner($this->course))->get_all_issues();
+
+        $found = array_filter($issues, fn($i) => $i['subtype'] === 'mod_quiz_empty');
+        $this->assertCount(1, $found, 'Quiz without questions should be flagged.');
+    }
+
+    /**
+     * A quiz that has a question must not be flagged as empty.
+     */
+    public function test_scan_does_not_flag_quiz_with_questions(): void {
+        global $CFG;
+        require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+
+        $quiz = $this->getDataGenerator()->create_module('quiz', ['course' => $this->course->id]);
+        $questiongenerator = $this->getDataGenerator()->get_plugin_generator('core_question');
+        $category = $questiongenerator->create_question_category();
+        $question = $questiongenerator->create_question('essay', null, ['category' => $category->id]);
+        quiz_add_quiz_question($question->id, $quiz, 0, 1);
+
+        $issues = (new scanner($this->course))->get_all_issues();
+
+        $found = array_filter($issues, fn($i) => $i['subtype'] === 'mod_quiz_empty');
+        $this->assertEmpty($found, 'Quiz with a question should not be flagged as empty.');
+    }
+
+    /**
+     * Activities hidden from students are not the teacher's concern yet, so no module issue is raised.
+     */
+    public function test_scan_ignores_hidden_activities(): void {
+        global $DB;
+
+        $assign = $this->getDataGenerator()->create_module('assign', ['course' => $this->course->id, 'visible' => 0]);
+        $DB->set_field('assign', 'intro', '', ['id' => $assign->id]);
+        $forum = $this->getDataGenerator()->create_module('forum', ['course' => $this->course->id, 'visible' => 0]);
+        $DB->set_field('forum', 'intro', '', ['id' => $forum->id]);
+        $this->getDataGenerator()->create_module('quiz', ['course' => $this->course->id, 'visible' => 0]);
+
+        $issues = (new scanner($this->course))->get_all_issues();
+
+        $moduleissues = array_filter($issues, fn($i) => strpos($i['subtype'], 'mod_') === 0);
+        $this->assertEmpty($moduleissues, 'Hidden activities must not produce module issues.');
+    }
 }

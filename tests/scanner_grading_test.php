@@ -242,4 +242,17 @@ final class scanner_grading_test extends advanced_testcase {
         $this->assertTrue($DB->record_exists('quiz_attempts', ['quiz' => $quiz->id, 'preview' => 1]));
         $this->assertCount(0, $this->grading_issues('mod_quiz_grading'));
     }
+
+    /**
+     * A hidden quiz does not raise a grading alert even with an attempt waiting.
+     */
+    public function test_quiz_hidden_from_students_is_not_reported(): void {
+        $student = $this->getDataGenerator()->create_and_enrol($this->course, 'student');
+        $quiz = $this->getDataGenerator()->create_module('quiz', ['course' => $this->course->id, 'visible' => 0]);
+        $this->add_essay_question($quiz);
+
+        $this->finish_attempt($quiz, $student);
+
+        $this->assertCount(0, $this->grading_issues('mod_quiz_grading'));
+    }
 }
