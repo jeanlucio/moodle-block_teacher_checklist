@@ -45,9 +45,15 @@ class restore_teacher_checklist_structure_step extends restore_structure_step {
         $data = (object)$data;
         $data->courseid = $this->get_courseid();
 
-        // As we changed the backup to only fetch manual items,
-        // anything else is an anomaly and we ignore it.
-        if ($data->type !== 'manual') {
+        // Automatic items are never backed up; anything other than manual items and config rows is an anomaly.
+        if (!in_array($data->type, ['manual', 'config'], true)) {
+            return;
+        }
+
+        // Only the automatic-scan switch is a known config row. The destination course keeps its own value
+        // when it already has one, so restoring into an existing course never overrides a teacher's choice.
+        if ($data->type === 'config') {
+            $this->process_config_item($data);
             return;
         }
 
@@ -77,5 +83,34 @@ class restore_teacher_checklist_structure_step extends restore_structure_step {
         if (!$exists) {
             $DB->insert_record('block_teacher_checklist', $data);
         }
+    }
+
+    /**
+     * Restore a course config row, keeping the destination value when one already exists.
+     *
+     * @param stdClass $data The config row from the backup XML, with courseid already set to the destination.
+     */
+    protected function process_config_item(stdClass $data): void {
+        global $DB, $USER;
+
+        if ($data->subtype !== 'scan_enabled') {
+            return;
+        }
+
+        $conditions = [
+            'courseid' => $data->courseid,
+            'type' => 'config',
+            'subtype' => $data->subtype,
+            'docid' => 0,
+        ];
+        if ($DB->record_exists('block_teacher_checklist', $conditions)) {
+            return;
+        }
+
+        $newuserid = $this->get_mappingid('user', $data->userid);
+        $data->userid = $newuserid ? $newuserid : $USER->id;
+        $data->docid = 0;
+        unset($data->id);
+        $DB->insert_record('block_teacher_checklist', $data);
     }
 }

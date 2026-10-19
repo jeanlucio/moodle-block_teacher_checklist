@@ -333,9 +333,10 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, Aja
                 } else {
                     Str.get_strings([
                         {key: 'notice', component: 'moodle'},
-                        {key: 'no_items_selected', component: 'block_teacher_checklist'}
+                        {key: 'no_items_selected', component: 'block_teacher_checklist'},
+                        {key: 'ok', component: 'moodle'}
                     ]).done(function(s) {
-                        Notification.alert(s[0], s[1], 'Ok');
+                        Notification.alert(s[0], s[1], s[2]);
                     });
                 }
             });

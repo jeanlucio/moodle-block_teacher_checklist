@@ -210,19 +210,46 @@ class scanner {
         global $DB;
         $issues = [];
 
-        // Fetch assignments with a subquery to count pending submissions.
+        // Fetch assignments with a subquery to count pending submissions. It follows the core criterion of
+        // assign::count_submissions_need_grading_with_groups(): only the latest attempt of an active participant
+        // counts, and it is pending when the grade of that same attempt is missing or older than the submission.
+        // The userid <> 0 filter drops the shared team row, whose grade is stored per member, never on that row.
         $sql = "SELECT a.id, a.name, a.duedate, a.intro,
                        (SELECT COUNT(s.id)
                         FROM {assign_submission} s
-                        LEFT JOIN {assign_grades} g ON s.assignment = g.assignment AND s.userid = g.userid
+                        JOIN (SELECT DISTINCT ue.userid
+                                FROM {user_enrolments} ue
+                                JOIN {enrol} en ON en.id = ue.enrolid
+                               WHERE en.courseid = :enrolcourseid
+                                 AND en.status = :enrolenabled
+                                 AND ue.status = :ueactive
+                                 AND ue.timestart <= :now1
+                                 AND (ue.timeend = 0 OR ue.timeend > :now2)
+                             ) participants ON participants.userid = s.userid
+                        LEFT JOIN {assign_grades} g ON g.assignment = s.assignment
+                                                   AND g.userid = s.userid
+                                                   AND g.attemptnumber = s.attemptnumber
                         WHERE s.assignment = a.id
                           AND s.status = 'submitted'
-                          AND (g.grade IS NULL OR g.grade = -1)
+                          AND s.latest = 1
+                          AND s.userid <> 0
+                          AND (g.id IS NULL
+                               OR g.grade IS NULL
+                               OR g.grade = -1
+                               OR s.timemodified >= g.timemodified)
                        ) as pending_grading
                 FROM {assign} a
-                WHERE a.course = ?";
+                WHERE a.course = :courseid";
 
-        $assigns = $DB->get_records_sql($sql, [$this->course->id]);
+        $now = time();
+        $assigns = $DB->get_records_sql($sql, [
+            'enrolcourseid' => $this->course->id,
+            'enrolenabled' => ENROL_INSTANCE_ENABLED,
+            'ueactive' => ENROL_USER_ACTIVE,
+            'now1' => $now,
+            'now2' => $now,
+            'courseid' => $this->course->id,
+        ]);
 
         foreach ($assigns as $assign) {
             $cm = $this->get_cm_by_instance('assign', $assign->id);
@@ -392,6 +419,7 @@ class scanner {
                         FROM {quiz_attempts} qa
                         WHERE qa.quiz = q.id
                           AND qa.state = 'finished'
+                          AND qa.preview = 0
                           AND qa.sumgrades IS NULL
                        ) as pending_count
                 FROM {quiz} q

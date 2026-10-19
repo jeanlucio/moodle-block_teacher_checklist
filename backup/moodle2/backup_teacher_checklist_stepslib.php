@@ -44,12 +44,13 @@ class backup_teacher_checklist_structure_step extends backup_block_structure_ste
         $items->add_child($item);
 
         // 5. Define data source WITH FILTER.
-        // KEY POINT: We only filter where type = 'manual'.
-        // Thus, we do not backup the automatic items.
-        $item->set_source_table('block_teacher_checklist', [
-            'courseid' => backup::VAR_COURSEID,
-            'type'     => backup_helper::is_sqlparam('manual'),
-        ]);
+        // Manual items and the course config rows (e.g. the automatic-scan switch) are backed up. Neither
+        // references an ID of the source course. Automatic items are not, because their docid points at
+        // activities whose IDs change on restore; they are recalculated by the scanner.
+        $item->set_source_sql(
+            "SELECT * FROM {block_teacher_checklist} WHERE courseid = ? AND type IN ('manual', 'config')",
+            [backup::VAR_COURSEID]
+        );
 
         // 6. Annotate user ids.
         $item->annotate_ids('user', 'userid');

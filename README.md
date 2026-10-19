@@ -25,10 +25,9 @@
 
 * 🔍 **Automatic Scanning:** Detects common course configuration problems without any manual work.
 * 📋 **Manual Items:** Teachers can add custom tasks that the system cannot detect automatically.
-* 🔗 **Smart Linking:** If a manual task title matches an existing activity name, a clickable link is created automatically.
 * 👁️ **Status Tracking:** Each item can be marked as Done, Ignored, or restored to Pending.
 * ⚡ **Bulk Actions:** Mark or ignore multiple items at once with a single click.
-* 💾 **Backup Safe:** Manual items are preserved during course backup/restore; automatic issues are recalculated dynamically.
+* 💾 **Backup Safe:** Manual items and the automatic-scan switch are preserved during course backup/restore; automatic issues are recalculated dynamically.
 * 🔄 **Toggle Scan:** Automatic scanning can be disabled to use the block as a pure manual checklist.
 
 #### Automatic checks
@@ -99,11 +98,11 @@ git clone git@github.com:jeanlucio/moodle-block_teacher_checklist.git blocks/tea
 
 ### 🔐 Security & Compliance
 
-* Capability-based access control (`block/teacher_checklist:addinstance`)
+* Capability-based access control: the block and its dashboard require `moodle/course:update` in the course
 * `require_sesskey()` on all state-changing form submissions
 * Moodle External API compliant (AJAX via `core/ajax`)
 * Full Privacy API implementation — data export and deletion supported
-* Backup and restore support for manual items
+* Backup and restore support for manual items and the automatic-scan setting
 
 ---
 
@@ -125,10 +124,9 @@ O **Teacher Checklist** é um bloco para Moodle que ajuda professores a verifica
 
 * 🔍 **Verificação Automática:** Detecta problemas comuns na configuração do curso sem nenhum trabalho manual.
 * 📋 **Itens Manuais:** Professores podem adicionar tarefas que o sistema não consegue detectar automaticamente.
-* 🔗 **Link Inteligente:** Se o título de uma tarefa manual coincidir com o nome de uma atividade existente, um link clicável é criado automaticamente.
 * 👁️ **Rastreamento de Status:** Cada item pode ser marcado como Feito, Ignorado ou restaurado para Pendente.
 * ⚡ **Ações em Lote:** Marque ou ignore vários itens de uma vez com um único clique.
-* 💾 **Backup Seguro:** Itens manuais são preservados no backup/restauração do curso; problemas automáticos são recalculados dinamicamente.
+* 💾 **Backup Seguro:** Itens manuais e a chave da verificação automática são preservados no backup/restauração do curso; problemas automáticos são recalculados dinamicamente.
 * 🔄 **Alternar Verificação:** A verificação automática pode ser desativada para usar o bloco apenas como lista manual.
 
 #### Verificações automáticas
@@ -199,11 +197,11 @@ git clone git@github.com:jeanlucio/moodle-block_teacher_checklist.git blocks/tea
 
 ### 🔐 Segurança e Conformidade
 
-* Controle de acesso baseado em capabilities (`block/teacher_checklist:addinstance`)
+* Controle de acesso baseado em capabilities: o bloco e o painel exigem `moodle/course:update` no curso
 * Proteção com `require_sesskey()` em todos os envios de formulário que alteram dados
 * Compatível com a API externa do Moodle (AJAX via `core/ajax`)
 * Implementação completa da Privacy API — exportação e exclusão de dados suportadas
-* Suporte a backup e restauração de itens manuais
+* Suporte a backup e restauração de itens manuais e da configuração de verificação automática
 
 ---
 
