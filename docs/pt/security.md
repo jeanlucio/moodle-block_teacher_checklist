@@ -5,7 +5,7 @@
 * **Proteção contra CSRF:** o formulário do painel só é processado com um `sesskey` válido.
 * **Entrada tipada e saída segura:** os títulos são lidos como parâmetros de texto e exibidos via `format_string()`; o status aceita apenas os três valores permitidos.
 * **API externa do Moodle:** as ações AJAX usam um web service padrão por meio de `core/ajax`.
-* **Privacy API completa:** metadados, exportação e exclusão dos itens do checklist, incluindo listas de usuários.
+* **Privacy API completa:** metadados, exportação e exclusão dos itens do checklist, incluindo listas de usuários. Excluir um professor apaga os itens manuais que ele escreveu e apenas desvincula o professor do estado do curso (problemas ignorados, chave da verificação), que os outros professores mantêm.
 * **Limpeza na exclusão do curso:** um observador de evento remove os itens do curso quando ele é excluído.
 * **Backup e restauração:** itens manuais e a chave da verificação automática são incluídos; os ids de usuário são remapeados na restauração.
 * **Sem serviços externos e sem bibliotecas de terceiros:** o bloco nunca contacta um serviço de fora.

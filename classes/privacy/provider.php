@@ -168,24 +168,18 @@ class provider implements
      * @param approved_contextlist $contextlist The approved context list object.
      */
     public static function delete_data_for_user(approved_contextlist $contextlist) {
-        global $DB;
-
         if (empty($contextlist->count())) {
             return;
         }
 
-        $userid = $contextlist->get_user()->id;
-
+        $courseids = [];
         foreach ($contextlist->get_contexts() as $context) {
-            if ($context->contextlevel != CONTEXT_COURSE) {
-                continue;
+            if ($context->contextlevel == CONTEXT_COURSE) {
+                $courseids[] = $context->instanceid;
             }
-
-            $DB->delete_records('block_teacher_checklist', [
-                'courseid' => $context->instanceid,
-                'userid' => $userid,
-            ]);
         }
+
+        self::erase_users_in_courses($courseids, [$contextlist->get_user()->id]);
     }
 
     /**
@@ -194,8 +188,6 @@ class provider implements
      * @param approved_userlist $userlist The approved user list object.
      */
     public static function delete_data_for_users(approved_userlist $userlist) {
-        global $DB;
-
         $context = $userlist->get_context();
 
         if ($context->contextlevel != CONTEXT_COURSE) {
@@ -208,13 +200,41 @@ class provider implements
             return;
         }
 
-        [$insql, $inparams] = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
-        $inparams['courseid'] = $context->instanceid;
+        self::erase_users_in_courses([$context->instanceid], $userids);
+    }
+
+    /**
+     * Erases what the given users own in the given courses without touching the state shared by other teachers.
+     *
+     * Manual items belong to the user who wrote them, so they are deleted. Rows of type auto (ignored or done
+     * issues) and config (the automatic-scan switch) are course state that every teacher sees; they only
+     * record who set them last, so the user is detached from them instead of deleting them.
+     *
+     * @param int[] $courseids The course ids.
+     * @param int[] $userids The users to erase.
+     */
+    private static function erase_users_in_courses(array $courseids, array $userids): void {
+        global $DB;
+
+        if (empty($courseids) || empty($userids)) {
+            return;
+        }
+
+        [$coursesql, $courseparams] = $DB->get_in_or_equal($courseids, SQL_PARAMS_NAMED, 'course');
+        [$usersql, $userparams] = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED, 'user');
+        $params = $courseparams + $userparams + ['manual' => 'manual'];
 
         $DB->delete_records_select(
             'block_teacher_checklist',
-            "courseid = :courseid AND userid $insql",
-            $inparams
+            "courseid $coursesql AND type = :manual AND userid $usersql",
+            $params
+        );
+        $DB->set_field_select(
+            'block_teacher_checklist',
+            'userid',
+            0,
+            "courseid $coursesql AND type <> :manual AND userid $usersql",
+            $params
         );
     }
 

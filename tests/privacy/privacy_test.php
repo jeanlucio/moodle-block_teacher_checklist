@@ -236,4 +236,99 @@ final class privacy_test extends advanced_testcase {
             'userid'   => $userc->id,
         ]));
     }
+
+    /**
+     * Inserts a course-wide state row (an ignored issue or the scan switch) set by a user.
+     *
+     * @param int $courseid Course the row belongs to.
+     * @param int $userid User who set the state last.
+     * @param string $type Row type, auto or config.
+     * @param string $subtype Row subtype.
+     * @param int $status Status code.
+     */
+    private function create_state_row(int $courseid, int $userid, string $type, string $subtype, int $status): void {
+        global $DB;
+
+        $DB->insert_record('block_teacher_checklist', (object) [
+            'courseid'     => $courseid,
+            'userid'       => $userid,
+            'type'         => $type,
+            'subtype'      => $subtype,
+            'docid'        => 7,
+            'status'       => $status,
+            'timecreated'  => time(),
+            'timemodified' => time(),
+        ]);
+    }
+
+    /**
+     * Erasing a teacher keeps the course state shared with the other teachers.
+     *
+     * The ignored issue and the scan switch only record who set them last, so they are detached from the user
+     * instead of deleted; the manual item written by another teacher is untouched even though this user was
+     * the one who marked it as done.
+     */
+    public function test_delete_data_for_user_keeps_course_state_and_items_of_others(): void {
+        global $DB;
+
+        $teachera = $this->getDataGenerator()->create_user();
+        $teacherb = $this->getDataGenerator()->create_user();
+        $course = $this->getDataGenerator()->create_course();
+        $context = context_course::instance($course->id);
+
+        $itemofa = $this->create_item($course->id, $teachera->id, 0, 'Written by A');
+        $itemofb = $this->create_item($course->id, $teacherb->id, 0, 'Written by B');
+        $this->create_state_row($course->id, $teacherb->id, 'auto', 'mod_assign_nodate', 2);
+        $this->create_state_row($course->id, $teacherb->id, 'config', 'scan_enabled', 0);
+
+        // Teacher B marks the item of teacher A as done through the real web service.
+        $this->setUser($teacherb);
+        $this->getDataGenerator()->enrol_user($teacherb->id, $course->id, 'editingteacher');
+        \block_teacher_checklist\external::toggle_item_status($course->id, 'manual', '', $itemofa, 1);
+
+        $contextlist = new approved_contextlist($teacherb, 'block_teacher_checklist', [$context->id]);
+        provider::delete_data_for_user($contextlist);
+
+        $this->assertFalse($DB->record_exists('block_teacher_checklist', ['id' => $itemofb]));
+        $this->assertEquals(1, $DB->get_field('block_teacher_checklist', 'status', ['id' => $itemofa]));
+        $this->assertEquals(2, $DB->get_field('block_teacher_checklist', 'status', [
+            'courseid' => $course->id,
+            'type' => 'auto',
+        ]));
+        $this->assertEquals(0, $DB->get_field('block_teacher_checklist', 'status', [
+            'courseid' => $course->id,
+            'type' => 'config',
+        ]));
+        $this->assertEquals(0, $DB->count_records('block_teacher_checklist', [
+            'courseid' => $course->id,
+            'userid' => $teacherb->id,
+        ]));
+    }
+
+    /**
+     * The user-list form erases like the context-list one, in the requested course only.
+     */
+    public function test_delete_data_for_users_keeps_course_state(): void {
+        global $DB;
+
+        $teacher = $this->getDataGenerator()->create_user();
+        $course = $this->getDataGenerator()->create_course();
+        $othercourse = $this->getDataGenerator()->create_course();
+        $context = context_course::instance($course->id);
+
+        $mine = $this->create_item($course->id, $teacher->id, 0, 'Mine');
+        $this->create_state_row($course->id, $teacher->id, 'config', 'scan_enabled', 0);
+        $inothercourse = $this->create_item($othercourse->id, $teacher->id, 0, 'Other course');
+
+        $userlist = new approved_userlist($context, 'block_teacher_checklist', [$teacher->id]);
+        provider::delete_data_for_users($userlist);
+
+        $this->assertFalse($DB->record_exists('block_teacher_checklist', ['id' => $mine]));
+        $this->assertTrue($DB->record_exists('block_teacher_checklist', [
+            'courseid' => $course->id,
+            'type' => 'config',
+            'userid' => 0,
+        ]));
+        $this->assertTrue($DB->record_exists('block_teacher_checklist', ['id' => $inothercourse]));
+    }
 }

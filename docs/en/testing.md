@@ -10,12 +10,12 @@ Every CI push runs the PHPUnit and Behat suites against the supported Moodle ver
 | `tests/scanner_grading_test.php` | 7 | The grading backlog, built through the real `mod_assign` and `mod_quiz` APIs: pending until graded, team submissions, resubmission after grading, suspended students, essay attempts, teacher previews, hidden quizzes |
 | `tests/renderer_test.php` | 8 | Item ids, icon handling, the `#` placeholder never rendered as a link, title sanitising, actions per tab, severity flag, the five-item limit of the block summary, the empty state |
 | `tests/checklist_block_test.php` | 5 | The block shows pending manual items to a teacher and nothing to a student, content cached per block object, no automatic issues when the scan is off, allowed page formats |
-| `tests/external_test.php` | 8 | The status web service: invalid status rejected, capability required, auto items created and updated, manual items updated, unknown manual item |
+| `tests/external_test.php` | 9 | The status web service: invalid status rejected, capability required, auto items created and updated, manual items updated and keeping their author, unknown manual item |
 | `tests/external_tasks_test.php` | 5 | The public API: insert, idempotency, other sources and teacher items preserved, blank titles skipped, clearing a source |
 | `tests/observer_test.php` | 1 | Deleting a course removes only that course's items |
 | `tests/backup_restore_test.php` | 3 | A real course backup and restore: scan switch and manual items travel, automatic items do not, the destination keeps its own switch |
-| `tests/privacy/privacy_test.php` | 7 | Metadata, context and user discovery, localised export, deletion per user, per context and for a user list |
-| **Total** | **73** | |
+| `tests/privacy/privacy_test.php` | 9 | Metadata, context and user discovery, localised export, deletion per user, per context and for a user list, and the erasure keeping the course-wide state and the items of other teachers |
+| **Total** | **76** | |
 
 ### Behat — Acceptance Tests
 

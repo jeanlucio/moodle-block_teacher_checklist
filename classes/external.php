@@ -87,8 +87,8 @@ class external extends external_api {
         if ($params['type'] === 'manual') {
             $record = $DB->get_record('block_teacher_checklist', ['id' => $params['docid'], 'courseid' => $params['courseid']]);
             if ($record) {
+                // The userid of a manual item stays its author, so a privacy request touches only what that user wrote.
                 $record->status = $params['status'];
-                $record->userid = $USER->id;
                 $record->timemodified = time();
                 $DB->update_record('block_teacher_checklist', $record);
             }
@@ -107,6 +107,7 @@ class external extends external_api {
         $record = $DB->get_record('block_teacher_checklist', $conditions);
 
         if ($record) {
+            // Auto and config rows are course-wide state; userid only records who set it last.
             $record->status = $params['status'];
             $record->userid = $USER->id;
             $record->timemodified = time();

@@ -5,7 +5,7 @@
 * **CSRF protection:** the dashboard form is processed only with a valid `sesskey`.
 * **Typed input and safe output:** titles are read as text parameters and rendered through `format_string()`; the status accepts only the three allowed values.
 * **Moodle External API:** the AJAX actions use a standard web service through `core/ajax`.
-* **Full Privacy API:** metadata, export and deletion for the checklist items, including user lists.
+* **Full Privacy API:** metadata, export and deletion for the checklist items, including user lists. Erasing a teacher deletes the manual items that teacher wrote and only detaches the teacher from the course-wide state (ignored issues, the scan switch), so the other teachers keep it.
 * **Clean-up on course deletion:** an event observer removes a course's items when the course is deleted.
 * **Backup and restore:** manual items and the automatic-scan switch are included; user ids are remapped on restore.
 * **No external services and no third-party libraries:** the block never contacts an outside service.

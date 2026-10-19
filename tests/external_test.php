@@ -262,4 +262,29 @@ final class external_test extends advanced_testcase {
             'timemodified should be updated to a more recent timestamp.'
         );
     }
+
+    /**
+     * Another teacher marking a manual item must not take over its authorship.
+     */
+    public function test_toggle_manual_item_keeps_the_author(): void {
+        global $DB;
+
+        $recordid = $DB->insert_record('block_teacher_checklist', (object)[
+            'courseid'     => $this->course->id,
+            'userid'       => $this->teacher->id,
+            'type'         => 'manual',
+            'title'        => 'Written by the first teacher',
+            'status'       => 0,
+            'timecreated'  => time(),
+            'timemodified' => time(),
+        ]);
+        $colleague = $this->getDataGenerator()->create_and_enrol($this->course, 'editingteacher');
+        $this->setUser($colleague);
+
+        external::toggle_item_status($this->course->id, 'manual', '', $recordid, 1);
+
+        $updated = $DB->get_record('block_teacher_checklist', ['id' => $recordid]);
+        $this->assertEquals(1, (int)$updated->status);
+        $this->assertEquals($this->teacher->id, (int)$updated->userid);
+    }
 }
