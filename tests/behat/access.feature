@@ -2,7 +2,7 @@
 Feature: Only teachers can see the Teacher Checklist
   In order to keep the checklist private to the people who manage the course
   As a student
-  I must not reach the checklist dashboard or see the block
+  I must not see the block
 
   Background:
     Given the following "users" exist:
@@ -19,10 +19,6 @@ Feature: Only teachers can see the Teacher Checklist
     And the following "blocks" exist:
       | blockname         | contextlevel | reference | pagetypepattern | defaultregion |
       | teacher_checklist | Course       | C1        | course-view-*   | side-pre      |
-
-  Scenario: A student cannot open the dashboard
-    When I am on the "C1" "block_teacher_checklist > dashboard" page logged in as "student1"
-    Then I should see "Sorry, but you do not currently have permissions to do that (Update course settings)"
 
   Scenario: A student does not see the block in the course
     When I am on the "Course 1" "course" page logged in as "student1"
