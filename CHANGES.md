@@ -4,6 +4,36 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [v1.3.3] — 2026-10-19
+
+### Fixed
+
+- **Wrong "awaiting grading" counts** — pending assignment submissions now
+  follow Moodle's own rule: only the latest attempt of an active participant
+  counts, a submission edited after it was graded is pending again, and a team
+  assignment no longer keeps a "High" alert after every member is graded. A
+  teacher's own quiz previews are no longer reported as attempts awaiting
+  manual grading.
+- **Automatic-scan switch lost on restore** — turning the automatic scan off
+  is now part of the course backup, so a restored or duplicated course keeps
+  it off. A destination course that already has its own setting keeps it.
+- **Privacy requests affecting other teachers** — a manual item keeps its
+  author when a colleague marks it as done, and erasing a teacher deletes only
+  the manual items that teacher wrote. Ignored issues and the scan switch are
+  course-wide state, so they are kept for the other teachers.
+- **Privacy metadata** — every column of the checklist table is now declared
+  in the privacy registry, including the ones already present in data exports.
+- **Untranslated button** — the dialog shown when a bulk action has no
+  selected items now uses Moodle's translated "OK" label.
+- **Misleading help text** — the dashboard help and the documentation no
+  longer promise that a manual item turns into a link to an activity, and the
+  access control is described as `moodle/course:update`.
+
+### Changed
+
+- The full documentation moved to a GitHub Pages site in English and
+  Portuguese; the README keeps the essentials.
+
 ## [v1.3.2] — 2026-09-25
 
 ### Confirmed
